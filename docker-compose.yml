@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+    go:
+        build: .
+        environment:
+            DB_DATABASE: ${DB_DATABASE}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_USER: ${DB_USER}
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+        ports: 
+            - 8000:8000
+        volumes:
+            - .:/app
+        depends_on:
+            - mysql
+
+    mysql:
+        image: mysql:8
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USER}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ./db:/var/lib/mysql
+        ports:
+            - 3306:3306
