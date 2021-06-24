@@ -6,5 +6,5 @@ type UserRepository interface {
 	Save(*entity.User) (*entity.User, map[string]string)
 	FindById(uint64) (*entity.User, error)
 	FindAll() ([]entity.User, error)
-	FindByEmailAndPassword(*entity.User) (*entity.User, map[string]string)
+	FindByEmail(email string) (*entity.User, map[string]string)
 }

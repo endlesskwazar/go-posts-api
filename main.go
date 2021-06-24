@@ -22,11 +22,15 @@ func main() {
 	services.Automigrate()
 
 	posts := handlers.NewPosts(services.Post)
+	users :=handlers.NewUsers(services.User)
 
 	e := echo.New()
 
 	e.POST("/api/posts", posts.Save)
 	e.GET("/api/posts", posts.List)
+
+	e.GET("api/users", users.List)
+	e.POST("/api/users", users.Save)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))

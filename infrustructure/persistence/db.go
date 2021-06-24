@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"fmt"
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
 
@@ -11,12 +10,12 @@ import (
 
 type Repositories struct {
 	Post repository.PostRepository
+	User repository.UserRepository
 	db   *gorm.DB
 }
 
 func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repositories, error) {
 	dsn := DbUser + ":" + DbPassword + "@tcp(" + DbHost + ":" + DbPort + ")/" + DbName + "?parseTime=true"
-	fmt.Println(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
@@ -24,6 +23,7 @@ func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Reposi
 
 	return &Repositories{
 		Post: NewPostRepository(db),
+		User: NewUserRepository(db),
 		db:   db,
 	}, nil
 }

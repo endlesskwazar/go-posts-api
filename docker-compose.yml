@@ -15,6 +15,7 @@ services:
             - .:/app
         depends_on:
             - mysql
+        restart: on-failure
 
     mysql:
         image: mysql:8
