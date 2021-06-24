@@ -1,33 +1,11 @@
 package main
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 	"go-cource-api/infrustructure/persistence"
-	"go-cource-api/interfaces"
-	"log"
-	"net/http"
+	"go-cource-api/interfaces/handlers"
 	"os"
-	"regexp"
-	"strings"
 )
-
-type Route struct {
-	method string
-	url string
-	handler func(w http.ResponseWriter, r *http.Request)
-}
-
-func newRoute(method, pattern string, handler http.HandlerFunc) route {
-	return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
-}
-
-type route struct {
-	method  string
-	regex   *regexp.Regexp
-	handler http.HandlerFunc
-}
-
-type ctxKey struct{}
 
 
 func main() {
@@ -37,49 +15,19 @@ func main() {
 	dbname := os.Getenv("DB_DATABASE")
 	port := os.Getenv("DB_PORT")
 
-	println("host")
-	println(host)
-
 	services, err := persistence.NewRepositories(user, password, port, host, dbname)
 	if err != nil {
 		panic(err)
 	}
 	services.Automigrate()
 
-	posts := interfaces.NewPosts(services.Post)
+	posts := handlers.NewPosts(services.Post)
 
-	var routes = []route{
-		newRoute("GET", "/api/posts", posts.List),
-		newRoute("POST", "/api/posts", posts.Save),
-	}
+	e := echo.New()
 
-	serve := func(w http.ResponseWriter, r *http.Request) {
-		var allow []string
-		for _, route := range routes {
-			matches := route.regex.FindStringSubmatch(r.URL.Path)
-			if len(matches) > 0 {
-				if r.Method != route.method {
-					allow = append(allow, route.method)
-					continue
-				}
-				ctx := context.WithValue(r.Context(), ctxKey{}, matches[1:])
-				route.handler(w, r.WithContext(ctx))
-				return
-			}
-		}
-		if len(allow) > 0 {
-			w.Header().Set("Allow", strings.Join(allow, ", "))
-			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		http.NotFound(w, r)
-	}
+	e.POST("/api/posts", posts.Save)
+	e.GET("/api/posts", posts.List)
 
-	http.HandleFunc("/", serve)
-
-	error := http.ListenAndServe(":8000", nil)
-
-	if error != nil {
-		log.Fatal(error)
-	}
+	// Start server
+	e.Logger.Fatal(e.Start(":8000"))
 }
