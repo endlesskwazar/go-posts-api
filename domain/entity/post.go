@@ -11,5 +11,6 @@ type Post struct {
 	UserId    uint64    `gorm:"size:100;not null;" json:"userId"`
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"createAt"`
 	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updatedAt"`
-	User      User `json:"-"`
+	User      User      `json:"-"`
+	Comments  []Comment `json:"-"`
 }

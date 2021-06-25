@@ -9,7 +9,7 @@ type User struct {
 	Name      string    `gorm:"size:300;not null;" json:"firstName"`
 	Email     string    `gorm:"size:100;not null;unique" json:"email"`
 	Password  string    `gorm:"size:100;not null;" json:"password"`
-	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"created_at"`
-	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updated_at"`
+	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updatedAt"`
 	Posts []Post `json:"-"`
 }

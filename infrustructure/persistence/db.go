@@ -29,7 +29,7 @@ func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Reposi
 }
 
 func (s *Repositories) Automigrate() error {
-	err := s.db.AutoMigrate(&entity.Post{})
+	err := s.db.AutoMigrate(&entity.Post{}, &entity.User{}, &entity.Comment{})
 	if err != nil {
 		return err
 	}
