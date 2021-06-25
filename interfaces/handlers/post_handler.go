@@ -20,9 +20,8 @@ func NewPosts(app application.PostAppInterface) *Posts {
 
 func (p *Posts) List(c echo.Context) error {
 	posts, err := p.app.FindAll()
-
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, posts)
@@ -32,7 +31,7 @@ func (p *Posts) Save(c echo.Context) error {
 	postDto := new(dto.PostDto)
 
 	if err := c.Bind(postDto); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := c.Validate(postDto); err != nil {
@@ -41,12 +40,13 @@ func (p *Posts) Save(c echo.Context) error {
 
 	post := &entity.Post{
 		Title: postDto.Title,
+		Body: postDto.Body,
 		UserId: postDto.UserId,
 	}
 
 	_, err := p.app.Save(post)
 	if err != nil {
-		println("qwe")
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusCreated, post)
