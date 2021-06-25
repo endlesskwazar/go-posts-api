@@ -35,6 +35,10 @@ func (p *Posts) Save(c echo.Context) error {
 		return err
 	}
 
+	if err := c.Validate(postDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	post := &entity.Post{
 		Title: postDto.Title,
 		UserId: postDto.UserId,

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/infrustructure/persistence"
+	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
 	"os"
 )
@@ -25,6 +27,9 @@ func main() {
 	users :=handlers.NewUsers(services.User)
 
 	e := echo.New()
+	e.Validator = &validation.CustomValidator{
+		Validator: validator.New(),
+	}
 
 	e.POST("/api/posts", posts.Save)
 	e.GET("/api/posts", posts.List)
