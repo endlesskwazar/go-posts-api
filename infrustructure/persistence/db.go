@@ -11,6 +11,7 @@ import (
 type Repositories struct {
 	Post repository.PostRepository
 	User repository.UserRepository
+	Comment repository.CommentRepository
 	db   *gorm.DB
 }
 
@@ -24,6 +25,7 @@ func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Reposi
 	return &Repositories{
 		Post: NewPostRepository(db),
 		User: NewUserRepository(db),
+		Comment: NewCommentRepository(db),
 		db:   db,
 	}, nil
 }
