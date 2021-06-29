@@ -38,7 +38,6 @@ func (u *Users) Save(c echo.Context) error {
 	user := &entity.User{
 		Name: userDto.Name,
 		Email: userDto.Email,
-		Password: userDto.Password,
 	}
 
 	_, err := u.app.Save(user)

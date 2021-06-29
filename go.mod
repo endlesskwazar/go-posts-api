@@ -12,6 +12,7 @@ require (
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-shellwords v1.0.12 // indirect
+	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gorm.io/driver/mysql v1.1.1
 	gorm.io/gorm v1.21.11

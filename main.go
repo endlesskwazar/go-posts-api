@@ -6,9 +6,24 @@ import (
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
+	"html/template"
+	"io"
+	"net/http"
 	"os"
 )
 
+type TemplateRenderer struct {
+	templates *template.Template
+}
+
+func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+
+	if viewContext, isMap := data.(map[string]interface{}); isMap {
+		viewContext["reverse"] = c.Echo().Reverse
+	}
+
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 func main() {
 	host := os.Getenv("DB_HOST")
@@ -31,11 +46,24 @@ func main() {
 		Validator: validator.New(),
 	}
 
+	renderer := &TemplateRenderer{
+		templates: template.Must(template.ParseGlob("public/views/*.html")),
+	}
+	e.Renderer = renderer
+
 	e.POST("/api/posts", posts.Save)
 	e.GET("/api/posts", posts.List)
 
-	e.GET("api/users", users.List)
+	e.GET("/api/users", users.List)
 	e.POST("/api/users", users.Save)
+
+	e.GET("/login", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
+	})
+
+	e.GET("/register", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
+	})
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))
