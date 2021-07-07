@@ -35,25 +35,19 @@ func (u *UserRepo) FindById(id uint64) (*entity.User, error) {
 	return &user, nil
 }
 
-func (u *UserRepo) Save(user *entity.User) (*entity.User, map[string]string) {
-	dbErr := map[string]string{}
+func (u *UserRepo) Save(user *entity.User) (*entity.User, error) {
 	err := u.db.Debug().Create(&user).Error
 	if err != nil {
-		//any other db error
-		dbErr["db_error"] = "database error"
-		return nil, dbErr
+		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserRepo) FindByEmail(email string) (*entity.User, map[string]string) {
-	dbErr := map[string]string{}
+func (u *UserRepo) FindByEmail(email string) (*entity.User, error) {
 	var user entity.User
 	err := u.db.Debug().Where("email = ?", email).Take(&user).Error
 	if err != nil {
-		//any other db error
-		dbErr["db_error"] = "database error"
-		return nil, dbErr
+		return nil, err
 	}
 	return &user, nil
 }

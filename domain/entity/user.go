@@ -12,4 +12,5 @@ type User struct {
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"createdAt"`
 	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updatedAt"`
 	Posts []Post `json:"-"`
+	Tokens []Token `json:"-"`
 }
