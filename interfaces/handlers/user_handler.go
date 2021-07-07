@@ -32,12 +32,17 @@ func (u *Users) Save(c echo.Context) error {
 	userDto := new(dto.UserDto)
 
 	if err := c.Bind(userDto); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(userDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	user := &entity.User{
 		Name: userDto.Name,
 		Email: userDto.Email,
+		Password: userDto.Password,
 	}
 
 	_, err := u.app.Save(user)

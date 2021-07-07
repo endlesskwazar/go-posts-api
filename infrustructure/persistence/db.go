@@ -3,6 +3,10 @@ package persistence
 import (
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
+	"gorm.io/gorm/logger"
+	"log"
+	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -17,7 +21,20 @@ type Repositories struct {
 
 func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repositories, error) {
 	dsn := DbUser + ":" + DbPassword + "@tcp(" + DbHost + ":" + DbPort + ")/" + DbName + "?parseTime=true"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	gormLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:              time.Second,   // Slow SQL threshold
+			LogLevel:                   logger.Silent, // Log level
+			IgnoreRecordNotFoundError: true,           // Ignore ErrRecordNotFound error for logger
+			Colorful:                  false,          // Disable color
+		},
+	)
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: gormLogger,
+	})
 	if err != nil {
 		return nil, err
 	}
