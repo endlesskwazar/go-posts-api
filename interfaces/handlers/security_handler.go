@@ -47,7 +47,11 @@ func (u *Security) Register(c echo.Context) error  {
 		Password: registerUserDto.Password,
 	}
 
-	u.app.RegisterUser(user)
+	err := u.app.RegisterUser(user)
+
+	if err != nil {
+		return err
+	}
 
 	return c.String(http.StatusOK, "qwe")
 }
@@ -174,5 +178,13 @@ func getUserInfo(code string) ([]byte, error) {
 	}
 
 	return contents, nil
+}
+
+func(u *Security) UiLogin(c echo.Context) error {
+	return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
+}
+
+func(u *Security) UiRegister(c echo.Context) error {
+	return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
 }
 

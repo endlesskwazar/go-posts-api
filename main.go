@@ -8,7 +8,6 @@ import (
 	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
 	"go-cource-api/interfaces/middlewares"
-	http "net/http"
 	"os"
 )
 
@@ -32,31 +31,24 @@ func main() {
 	e.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}
-
 	e.Renderer = Renderer()
+	apiV1 := e.Group("/api/v1")
+	restrictedApiV1 := apiV1.Group("")
+	restrictedApiV1.Use(middlewares.AuthMiddleware())
 
-	e.POST("/register", security.Register)
-	e.POST("/login", security.Login)
-
-	e.POST("/api/posts", posts.Save)
-	e.GET("/api/posts", posts.List)
-
-	r := e.Group("/api")
-	r.Use(middlewares.AuthMiddleware())
-	r.GET("/restricted", func(context echo.Context) error {
-		return context.String(200, "qweqwe")
-	})
-
-	e.GET("/login", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
-	})
-
-	e.GET("/register", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
-	})
-
+	// Auth
+	e.GET("/login", security.UiLogin)
+	e.GET("/register", security.UiRegister)
+	apiV1.POST("/register", security.Register)
+	apiV1.POST("/login", security.Login)
 	e.GET("/auth/social/:provider", security.SocialRedirect)
 	e.GET("/auth/social/:provider/success", security.SocialLoginSuccess)
+
+	// Public API
+	e.GET("/api/posts", posts.List)
+
+	// Private API
+	e.POST("/api/posts", posts.Save)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))
