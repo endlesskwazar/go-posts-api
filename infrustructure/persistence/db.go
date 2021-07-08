@@ -41,7 +41,6 @@ func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Reposi
 
 	return &Repositories{
 		Post: NewPostRepository(db),
-		User: NewUserRepository(db),
 		Comment: NewCommentRepository(db),
 		db:   db,
 	}, nil

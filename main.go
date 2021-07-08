@@ -26,7 +26,6 @@ func main() {
 	services.Automigrate()
 
 	posts := handlers.NewPosts(services.Post)
-	users := handlers.NewUsers(services.User)
 	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
 
 	e := echo.New()
@@ -41,9 +40,6 @@ func main() {
 
 	e.POST("/api/posts", posts.Save)
 	e.GET("/api/posts", posts.List)
-
-	e.GET("/api/users", users.List)
-	e.POST("/api/users", users.Save)
 
 	r := e.Group("/api")
 	r.Use(middlewares.AuthMiddleware())
