@@ -8,6 +8,7 @@ import (
 	"go-cource-api/interfaces/dto"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"time"
 )
 
 type Users struct {
@@ -82,19 +83,22 @@ func (u *Users) Login(c echo.Context) error {
 		return  echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": user.Id,
-		"email": user.Email,
-	})
+	claims := &application.JwtCustomClaims{
+		Id:    user.Id,
+		Email: user.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+		},
+	}
+
+	// Create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Sign and get the complete encoded token as a string using the secret
 	// TODO: ceck for error
 
-	// TODO: use real cryp/rand
-	var hmacSampleSecret []byte
-
 	// Todo: check for error
-	tokenString, err := token.SignedString(hmacSampleSecret)
+	tokenString, err := token.SignedString([]byte(""))
 
 	println(tokenString)
 

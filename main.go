@@ -7,27 +7,14 @@ import (
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
+	"go-cource-api/interfaces/middlewares"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"html/template"
 	"io"
 	"io/ioutil"
 	http "net/http"
 	"os"
 )
-
-type TemplateRenderer struct {
-	templates *template.Template
-}
-
-func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-
-	if viewContext, isMap := data.(map[string]interface{}); isMap {
-		viewContext["reverse"] = c.Echo().Reverse
-	}
-
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 var (
 	googleOauthConfig *oauth2.Config
@@ -57,16 +44,22 @@ func main() {
 		Validator: validator.New(),
 	}
 
-	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("public/views/*.html")),
-	}
-	e.Renderer = renderer
+	e.Renderer = Renderer()
+
+	e.POST("/register", users.Register)
+	e.POST("/login", users.Login)
 
 	e.POST("/api/posts", posts.Save)
 	e.GET("/api/posts", posts.List)
 
 	e.GET("/api/users", users.List)
 	e.POST("/api/users", users.Save)
+
+	r := e.Group("/api")
+	r.Use(middlewares.AuthMiddleware())
+	r.GET("/restricted", func(context echo.Context) error {
+		return context.String(200, "qweqwe")
+	})
 
 	e.GET("/login", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
@@ -76,17 +69,17 @@ func main() {
 		return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
 	})
 
-	e.GET("/auth/social", func(c echo.Context) error {
+	e.GET("/security/social", func(c echo.Context) error {
 		provider := c.QueryParam("provider")
 
 		if provider == "google" {
 			googleOauthConfig = &oauth2.Config{
 				ClientID:     googleClientId,
 				ClientSecret: googleClientSecret,
-				RedirectURL:  "http://localhost:8000/auth/social/success",
+				RedirectURL:  "http://localhost:8000/security/social/success",
 				Scopes: []string{
-					"https://www.googleapis.com/auth/userinfo.profile",
-					"https://www.googleapis.com/auth/userinfo.email",
+					"https://www.googleapis.com/security/userinfo.profile",
+					"https://www.googleapis.com/security/userinfo.email",
 				},
 				Endpoint: google.Endpoint,
 			}
@@ -103,7 +96,7 @@ func main() {
 		return c.String(200, provider)
 	})
 
-	e.GET("/auth/social/success", func(c echo.Context) error {
+	e.GET("/security/social/success", func(c echo.Context) error {
 		code := c.QueryParam("code")
 
 		userInfo, err := getUserInfo(code)
@@ -118,21 +111,18 @@ func main() {
 		return c.String(200, string(userInfo))
 	})
 
-	e.POST("/register", users.Register)
-	e.POST("/login", users.Login)
-
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))
 }
 
 func getUserInfo(code string) ([]byte, error) {
-	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
+	exchange, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
 
 	if err != nil {
 		return nil, fmt.Errorf("code exchange failed: %s", err.Error())
 	}
 
-	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
