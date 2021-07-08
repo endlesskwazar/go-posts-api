@@ -8,6 +8,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/thanhpk/randstr v1.0.4
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
