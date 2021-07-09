@@ -45,3 +45,17 @@ func (r *CommentRepo) Save(comment *entity.Comment) (*entity.Comment, map[string
 	}
 	return comment, nil
 }
+
+func (r *CommentRepo) FindByPostId(postId uint64) ([]entity.Comment, error) {
+	var comments []entity.Comment
+
+	println("repo is executed")
+
+	err := r.db.Where("post_id = ?", postId).Find(&comments).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}

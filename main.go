@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"go-cource-api/application"
 	"go-cource-api/infrustructure"
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/validation"
@@ -25,6 +26,7 @@ func main() {
 	services.Automigrate()
 
 	posts := handlers.NewPosts(services.Post)
+	comments := handlers.NewComments(services.Comment)
 	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
 
 	e := echo.New()
@@ -34,6 +36,12 @@ func main() {
 	e.Renderer = Renderer()
 	apiV1 := e.Group("/api/v1")
 	restrictedApiV1 := apiV1.Group("")
+	restrictedApiV1.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &application.SecurityContext{Context: c}
+			return next(cc)
+		}
+	})
 	restrictedApiV1.Use(middlewares.AuthMiddleware())
 
 	// Auth
@@ -45,10 +53,16 @@ func main() {
 	apiV1.POST("/login", security.Login)
 
 	// Public API
-	e.GET("/posts", posts.List)
+	apiV1.GET("/posts", posts.List)
+	apiV1.GET("/posts/:postId/comments", comments.FindByPostId)
 
 	// Private API
 	restrictedApiV1.POST("/posts", posts.Save)
+	restrictedApiV1.DELETE("/posts/:id", posts.Delete)
+	restrictedApiV1.PUT("/posts/:id", posts.Update)
+	restrictedApiV1.POST("/posts/:postId/comments", comments.Save)
+	restrictedApiV1.DELETE("/posts/:id", posts.Delete)
+	restrictedApiV1.PUT("/posts/:id", posts.Update)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))

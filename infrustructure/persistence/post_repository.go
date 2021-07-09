@@ -35,6 +35,18 @@ func (r *PostRepo) FindById(id uint64) (*entity.Post, error) {
 	return &post, nil
 }
 
+func (r *PostRepo) FindByIdAndUserId(id uint64, userId uint64) (*entity.Post, error) {
+	var post entity.Post
+
+	err := r.db.Where("id = ? AND user_id >= ?", id, userId).First(&post).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
 func (r *PostRepo) Save(post *entity.Post) (*entity.Post, map[string]string) {
 	dbErr := map[string]string{}
 	err := r.db.Debug().Create(&post).Error
@@ -44,4 +56,16 @@ func (r *PostRepo) Save(post *entity.Post) (*entity.Post, map[string]string) {
 		return nil, dbErr
 	}
 	return post, nil
+}
+
+func (r *PostRepo) Update(post *entity.Post) error {
+	err := r.db.Model(&post).Updates(post).Error
+
+	return err
+}
+
+func (r *PostRepo) Delete(id uint64) error {
+	err := r.db.Delete(&entity.Post{}, id).Error
+
+	return err
 }

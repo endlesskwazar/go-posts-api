@@ -15,6 +15,7 @@ type CommentAppInterface interface {
 	Save(comment *entity.Comment) (*entity.Comment, map[string]string)
 	FindAll() ([]entity.Comment, error)
 	FindById(uint64) (*entity.Comment, error)
+	FindByPostId(postId uint64) ([]entity.Comment, error)
 }
 
 func (app *commentApp) Save(comment *entity.Comment) (*entity.Comment, map[string]string) {
@@ -27,4 +28,8 @@ func (app *commentApp) FindById(id uint64) (*entity.Comment, error) {
 
 func (app *commentApp) FindAll() ([]entity.Comment, error) {
 	return app.commentRepository.FindAll()
+}
+
+func (app *commentApp) FindByPostId(postId uint64) ([]entity.Comment, error) {
+	return app.commentRepository.FindByPostId(postId)
 }

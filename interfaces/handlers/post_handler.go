@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	unsecureJWT "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
-	"go-cource-api/domain"
 	"go-cource-api/domain/entity"
 	"go-cource-api/interfaces/dto"
 	"net/http"
+	"strconv"
 )
 
 type Posts struct {
@@ -40,15 +39,12 @@ func (p *Posts) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	user := c.Get("user").(*unsecureJWT.Token)
-	println("Here the user from context")
-	println(user)
-	claims := user.Claims.(*domain.JwtCustomClaims)
+	securityContext := c.(*application.SecurityContext)
 
 	post := &entity.Post{
 		Title: postDto.Title,
 		Body: postDto.Body,
-		UserId: claims.Id,
+		UserId: securityContext.UserClaims().Id,
 	}
 
 	_, err := p.app.Save(post)
@@ -57,4 +53,57 @@ func (p *Posts) Save(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, post)
+}
+
+func (p *Posts) Delete(c echo.Context) error {
+	// TODO: handle error
+	postId, _ := strconv.Atoi(c.Param("id"))
+	securityContext := c.(*application.SecurityContext)
+	userId := securityContext.UserClaims().Id
+
+	_, err := p.app.FindByIdAndUserId(uint64(postId), userId)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusForbidden, err)
+	}
+
+	if err = p.app.Delete(uint64(postId)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusNoContent, nil)
+}
+
+func (p *Posts) Update(c echo.Context) error {
+	postId, _ := strconv.Atoi(c.Param("id"))
+	securityContext := c.(*application.SecurityContext)
+	userId := securityContext.UserClaims().Id
+
+	postDto := new(dto.PostDto)
+
+	if err := c.Bind(postDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(postDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	_, err := p.app.FindByIdAndUserId(uint64(postId), userId)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusForbidden, err)
+	}
+
+	updatedPost := &entity.Post{
+		Id: uint64(postId),
+		Title: postDto.Title,
+		Body: postDto.Body,
+	}
+
+	if err = p.app.Update(updatedPost); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, updatedPost)
 }
