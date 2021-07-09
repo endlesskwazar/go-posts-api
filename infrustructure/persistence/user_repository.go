@@ -44,10 +44,11 @@ func (u *UserRepo) Save(user *entity.User) (*entity.User, error) {
 }
 
 func (u *UserRepo) FindByEmail(email string) (*entity.User, error) {
-	var user entity.User
+	println("executing user repo find by id")
+	user := &entity.User{}
 	err := u.db.Debug().Where("email = ?", email).Take(&user).Error
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
 }

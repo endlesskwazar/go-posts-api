@@ -39,16 +39,16 @@ func main() {
 	// Auth
 	e.GET("/login", security.UiLogin)
 	e.GET("/register", security.UiRegister)
-	apiV1.POST("/register", security.Register)
-	apiV1.POST("/login", security.Login)
 	e.GET("/auth/social/:provider", security.SocialRedirect)
 	e.GET("/auth/social/:provider/success", security.SocialLoginSuccess)
+	apiV1.POST("/register", security.Register)
+	apiV1.POST("/login", security.Login)
 
 	// Public API
-	e.GET("/api/posts", posts.List)
+	e.GET("/posts", posts.List)
 
 	// Private API
-	e.POST("/api/posts", posts.Save)
+	restrictedApiV1.POST("/posts", posts.Save)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))

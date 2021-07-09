@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	unsecureJWT "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
+	"go-cource-api/domain"
 	"go-cource-api/domain/entity"
 	"go-cource-api/interfaces/dto"
 	"net/http"
@@ -38,10 +40,15 @@ func (p *Posts) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	user := c.Get("user").(*unsecureJWT.Token)
+	println("Here the user from context")
+	println(user)
+	claims := user.Claims.(*domain.JwtCustomClaims)
+
 	post := &entity.Post{
 		Title: postDto.Title,
 		Body: postDto.Body,
-		UserId: postDto.UserId,
+		UserId: claims.Id,
 	}
 
 	_, err := p.app.Save(post)

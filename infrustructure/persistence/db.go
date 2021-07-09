@@ -35,12 +35,14 @@ func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Reposi
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: gormLogger,
 	})
+
 	if err != nil {
 		return nil, err
 	}
 
 	return &Repositories{
 		Post: NewPostRepository(db),
+		User: NewUserRepository(db),
 		Comment: NewCommentRepository(db),
 		db:   db,
 	}, nil
