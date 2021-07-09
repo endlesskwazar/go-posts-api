@@ -60,9 +60,10 @@ func main() {
 	restrictedApiV1.POST("/posts", posts.Save)
 	restrictedApiV1.DELETE("/posts/:id", posts.Delete)
 	restrictedApiV1.PUT("/posts/:id", posts.Update)
+
 	restrictedApiV1.POST("/posts/:postId/comments", comments.Save)
-	restrictedApiV1.DELETE("/posts/:id", posts.Delete)
-	restrictedApiV1.PUT("/posts/:id", posts.Update)
+	restrictedApiV1.DELETE("/comments/:id", comments.Delete)
+	restrictedApiV1.PUT("/comments/:id", comments.Update)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8000"))

@@ -68,3 +68,53 @@ func (p *Comments) FindByPostId(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, comments)
 }
+
+func (p *Comments) Delete(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	_, err := p.app.FindById(uint64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err)
+	}
+
+	if err = p.app.Delete(uint64(id)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusNoContent, nil)
+}
+
+func (p *Comments) Update(c echo.Context) error {
+	commentDto := new(dto.CommentDto)
+
+	if err := c.Bind(commentDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	if err := c.Validate(commentDto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	comment, err := p.app.FindById(uint64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err)
+	}
+
+	securityContext := c.(*application.SecurityContext)
+
+	// TODO: extruct to own error
+	if comment.UserId != securityContext.UserClaims().Id {
+		return echo.NewHTTPError(http.StatusNotFound, "Not found")
+	}
+
+	comment.Body = commentDto.Body
+
+	if err = p.app.Update(comment); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, comment)
+}

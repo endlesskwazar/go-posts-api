@@ -35,6 +35,18 @@ func (r *CommentRepo) FindById(id uint64) (*entity.Comment, error) {
 	return &comment, nil
 }
 
+func (r *CommentRepo) FindByPostId(postId uint64) ([]entity.Comment, error) {
+	var comments []entity.Comment
+
+	err := r.db.Where("post_id = ?", postId).Find(&comments).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
 func (r *CommentRepo) Save(comment *entity.Comment) (*entity.Comment, map[string]string) {
 	dbErr := map[string]string{}
 	err := r.db.Debug().Create(&comment).Error
@@ -46,16 +58,14 @@ func (r *CommentRepo) Save(comment *entity.Comment) (*entity.Comment, map[string
 	return comment, nil
 }
 
-func (r *CommentRepo) FindByPostId(postId uint64) ([]entity.Comment, error) {
-	var comments []entity.Comment
+func (r *CommentRepo) Delete(id uint64) error {
+	err := r.db.Delete(&entity.Comment{}, id).Error
 
-	println("repo is executed")
+	return err
+}
 
-	err := r.db.Where("post_id = ?", postId).Find(&comments).Error
+func (r *CommentRepo) Update(comment *entity.Comment) error {
+	err := r.db.Model(&comment).Updates(comment).Error
 
-	if err != nil {
-		return nil, err
-	}
-
-	return comments, nil
+	return err
 }
