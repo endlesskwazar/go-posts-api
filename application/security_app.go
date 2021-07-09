@@ -18,6 +18,7 @@ type SecurityAppInterface interface {
 	GenerateToken(entity.User) (*string, error)
 	RegisterUser(user *entity.User) error
 	IsUserExists(email string) bool
+	FindUserByEmail(email string) (*entity.User, error)
 }
 
 func (app *securityApp) HashPassword(password string) ([]byte, error) {
@@ -42,4 +43,8 @@ func (app *securityApp) RegisterUser(user *entity.User) error {
 
 func (app *securityApp) IsUserExists(email string) bool {
 	return app.security.IsUserExists(email)
+}
+
+func (app *securityApp) FindUserByEmail(email string) (*entity.User, error) {
+	return app.security.FindUserByEmail(email)
 }

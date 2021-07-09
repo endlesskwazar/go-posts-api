@@ -105,3 +105,7 @@ func (s *Security) GenerateToken(user entity.User) (*string, error) {
 
 	return &tokenString, nil
 }
+
+func (s *Security) FindUserByEmail(email string) (*entity.User, error) {
+	return s.userRepo.FindByEmail(email)
+}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/thanhpk/randstr"
@@ -10,6 +11,7 @@ import (
 	"go-cource-api/interfaces/dto"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"gorm.io/gorm"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -129,24 +131,34 @@ func(u *Security) SocialLoginSuccess(c echo.Context) error {
 			return err
 		}
 
-		isUserExists := u.app.IsUserExists(result["email"].(string))
+		user, err := u.app.FindUserByEmail(result["email"].(string))
 
 		// No user in Db -> create
-		if !isUserExists {
-			localUser := &entity.User{
+		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+			user = &entity.User{
 				Email: result["email"].(string),
 				Name: result["name"].(string),
 				Password: randstr.Hex(16),
 			}
 
-			err := u.app.RegisterUser(localUser)
+			err := u.app.RegisterUser(user)
 
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, err)
 			}
 		}
 
-		return c.String(200, string(userInfo))
+		token, err := u.app.GenerateToken(*user)
+
+		if err != nil {
+			return err
+		}
+
+		type Res struct {
+			Token string `json:"token"`
+		}
+
+		return c.JSON(200, &Res{Token: *token})
 	}
 
 	return echo.NewHTTPError(500, "Unsupported Ouath redirect")
