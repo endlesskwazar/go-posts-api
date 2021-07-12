@@ -36,14 +36,7 @@ func (s *Security) IsUserExists(email string) bool {
 }
 
 func (s *Security) RegisterUser(user *entity.User) error {
-	_, err := s.userRepo.Save(user)
-
-	if err != nil {
-		return err
-	}
-
 	hashedPassword, _ := s.HashPassword(user.Password)
-
 	user.Password = string(hashedPassword)
 
 	if _, err := s.userRepo.Save(user); err != nil {
