@@ -15,13 +15,21 @@ type DatabaseConfig struct {
 	Port string
 }
 
+type AppConfig struct {
+	Port string
+}
+
 type Config struct {
 	GoogleOauthConfig *oauth2.Config
 	FaceBookOauthConfig *oauth2.Config
 	DatabaseConfig *DatabaseConfig
+	AppConfig *AppConfig
 }
 
 func NewConfig() *Config {
+	appConfig := &AppConfig{
+		Port: os.Getenv("APP_PORT"),
+	}
 	databaseConfig := &DatabaseConfig{
 		Host: os.Getenv("DB_HOST"),
 		Password: os.Getenv("DB_PASSWORD"),
@@ -56,5 +64,6 @@ func NewConfig() *Config {
 		GoogleOauthConfig: googleOauthConfig,
 		DatabaseConfig: databaseConfig,
 		FaceBookOauthConfig: facebookOauthConfig,
+		AppConfig: appConfig,
 	}
 }

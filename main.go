@@ -4,11 +4,11 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
+	appMiddlewares "go-cource-api/application/middlewares"
 	"go-cource-api/infrustructure"
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
-	"go-cource-api/interfaces/middlewares"
 )
 
 func main() {
@@ -35,28 +35,15 @@ func main() {
 	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
 
 	e := echo.New()
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			println("executing middleware")
-			c.Set("config", config)
-			return next(c)
-		}
-	})
+	e.Use(appMiddlewares.ConfigInjectorMiddleware(config))
 	e.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}
 	e.Renderer = Renderer()
 	apiV1 := e.Group("/api/v1")
-	apiV1.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			cc := &application.SecurityContext{
-				Context: c,
-			}
-			return next(cc)
-		}
-	})
+	apiV1.Use(appMiddlewares.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")
-	restrictedApiV1.Use(middlewares.AuthMiddleware())
+	restrictedApiV1.Use(appMiddlewares.AuthMiddleware())
 
 	// Auth
 	e.GET("/login", security.UiLogin)
@@ -80,5 +67,6 @@ func main() {
 	restrictedApiV1.PUT("/comments/:id", comments.Update)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":8000"))
+	serverUrl := ":" + config.AppConfig.Port
+	e.Logger.Fatal(e.Start(serverUrl))
 }

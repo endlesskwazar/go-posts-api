@@ -108,7 +108,7 @@ func (u *Security) SocialLoginSuccess(c echo.Context) error {
 		}
 		userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken
 	case "facebook":
-		exchange, err := config.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
+		exchange, err := config.FaceBookOauthConfig.Exchange(oauth2.NoContext, code)
 		if err != nil {
 			return fmt.Errorf("code exchange failed: %s", err.Error())
 		}
