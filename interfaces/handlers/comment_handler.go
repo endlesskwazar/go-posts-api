@@ -19,28 +19,24 @@ func NewComments(app application.CommentAppInterface) *Comments {
 	}
 }
 
-func (p *Comments) List(c echo.Context) error {
-	comments, err := p.app.FindAll()
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, comments)
-}
-
 func (p *Comments) Save(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
+
 	if err := c.Bind(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
 	if err := c.Validate(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	securityContext := c.(*application.SecurityContext)
-	// TODO: handle error
-	postId, _ := strconv.Atoi(c.Param("postId"))
+
+	postId, err := strconv.Atoi(c.Param("postId"))
+
+	if err != nil {
+		return err
+	}
 
 	comment := &entity.Comment{
 		Body: commentDto.Body,
@@ -48,7 +44,7 @@ func (p *Comments) Save(c echo.Context) error {
 		UserId: securityContext.UserClaims().Id,
 	}
 
-	_, err := p.app.Save(comment)
+	_, err = p.app.Save(comment)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -57,8 +53,11 @@ func (p *Comments) Save(c echo.Context) error {
 }
 
 func (p *Comments) FindByPostId(c echo.Context) error {
-	// TODO: handle error
-	postId, _ := strconv.Atoi(c.Param("postId"))
+	postId, err := strconv.Atoi(c.Param("postId"))
+
+	if err != nil {
+		return err
+	}
 
 	comments, err := p.app.FindByPostId(uint64(postId))
 
@@ -70,9 +69,13 @@ func (p *Comments) FindByPostId(c echo.Context) error {
 }
 
 func (p *Comments) Delete(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 
-	_, err := p.app.FindById(uint64(id))
+	if err != nil {
+		return err
+	}
+
+	_, err = p.app.FindById(uint64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
@@ -95,7 +98,11 @@ func (p *Comments) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return err
+	}
 
 	comment, err := p.app.FindById(uint64(id))
 
