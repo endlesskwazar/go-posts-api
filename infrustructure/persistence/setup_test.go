@@ -28,6 +28,20 @@ func SeedUser(db *gorm.DB) *entity.User {
 	return user
 }
 
+func SeedPost(db *gorm.DB) *entity.Post {
+	user := SeedUser(db)
+
+	post := &entity.Post{
+		Title: "Test post",
+		Body: "Test body",
+		UserId: user.Id,
+	}
+
+	db.Create(&post)
+
+	return post
+}
+
 func setUpTestDb() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 

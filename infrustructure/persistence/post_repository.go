@@ -19,16 +19,17 @@ var _ repository.PostRepository = &PostRepo{}
 
 func (r *PostRepo) FindAll() ([]entity.Post, error) {
 	var posts []entity.Post
-	err := r.db.Debug().Find(&posts).Error
-	if err != nil {
+
+	if err := r.db.Find(&posts).Error; err != nil {
 		return nil, err
 	}
+
 	return posts, nil
 }
 
 func (r *PostRepo) FindById(id uint64) (*entity.Post, error) {
 	var post entity.Post
-	err := r.db.Debug().Where("id = ?", id).Take(&post).Error
+	err := r.db.Where("id = ?", id).Take(&post).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +49,7 @@ func (r *PostRepo) FindByIdAndUserId(id uint64, userId uint64) (*entity.Post, er
 }
 
 func (r *PostRepo) Save(post *entity.Post) (*entity.Post, error) {
-	if err := r.db.Debug().Create(&post).Error; err != nil {
+	if err := r.db.Create(&post).Error; err != nil {
 		return nil, err
 	}
 

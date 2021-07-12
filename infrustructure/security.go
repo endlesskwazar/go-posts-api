@@ -51,23 +51,15 @@ func (s *Security) HashPassword(password string) ([]byte, error) {
 }
 
 func (s *Security) LoginUser(email string, password string) (*string, error) {
-	println("executing security infrustructure")
-	println(email)
-
 	user, err := s.userRepo.FindByEmail(email)
 
 	if err != nil {
-		println("first error")
 		return nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
-
-	println(password)
-	println(user.Password)
 
 	err = s.VerifyPassword(password, user.Password)
 
 	if err != nil {
-		println("Verify password error")
 		return  nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 
@@ -79,7 +71,6 @@ func (s *Security) VerifyPassword(plain string, hash string) error {
 }
 
 func (s *Security) GenerateToken(user entity.User) (*string, error) {
-	println("executing generate token")
 	claims := &domain.JwtCustomClaims{
 		Id:    user.Id,
 		Email: user.Email,
