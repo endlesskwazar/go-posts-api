@@ -12,7 +12,7 @@ type postApp struct {
 var _ PostAppInterface = &postApp{}
 
 type PostAppInterface interface {
-	Save(*entity.Post) (*entity.Post, map[string]string)
+	Save(*entity.Post) (*entity.Post, error)
 	FindAll() ([]entity.Post, error)
 	FindById(uint64) (*entity.Post, error)
 	Delete(id uint64) error
@@ -20,7 +20,7 @@ type PostAppInterface interface {
 	Update(post *entity.Post) error
 }
 
-func (app *postApp) Save(post *entity.Post) (*entity.Post, map[string]string) {
+func (app *postApp) Save(post *entity.Post) (*entity.Post, error) {
 	return app.postRepository.Save(post)
 }
 

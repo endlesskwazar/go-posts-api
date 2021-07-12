@@ -8,7 +8,7 @@ import (
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/interfaces/handlers"
 	"go-cource-api/interfaces/middlewares"
-	validation2 "go-cource-api/interfaces/validation"
+	"go-cource-api/interfaces/validation"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middlewares.ConfigInjectorMiddleware(config))
-	e.Validator = &validation2.CustomValidator{
+	e.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}
 	e.Renderer = Renderer()

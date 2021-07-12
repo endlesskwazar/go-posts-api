@@ -47,14 +47,11 @@ func (r *PostRepo) FindByIdAndUserId(id uint64, userId uint64) (*entity.Post, er
 	return &post, nil
 }
 
-func (r *PostRepo) Save(post *entity.Post) (*entity.Post, map[string]string) {
-	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&post).Error
-	if err != nil {
-		//any other db error
-		dbErr["db_error"] = "database error"
-		return nil, dbErr
+func (r *PostRepo) Save(post *entity.Post) (*entity.Post, error) {
+	if err := r.db.Debug().Create(&post).Error; err != nil {
+		return nil, err
 	}
+
 	return post, nil
 }
 
