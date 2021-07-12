@@ -6,6 +6,7 @@ import (
 	"go-cource-api/application"
 	"go-cource-api/infrustructure"
 	"go-cource-api/infrustructure/persistence"
+	"go-cource-api/interfaces"
 	"go-cource-api/interfaces/handlers"
 	"go-cource-api/interfaces/middlewares"
 	"go-cource-api/interfaces/validation"
@@ -39,7 +40,7 @@ func main() {
 	e.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}
-	e.Renderer = Renderer()
+	e.Renderer = interfaces.Renderer()
 	apiV1 := e.Group("/api/v1")
 	apiV1.Use(middlewares.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")

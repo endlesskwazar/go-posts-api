@@ -20,7 +20,7 @@ func TestRegister_Success(t *testing.T) {
 
 	securityHandlers := NewSecurity(securityMock)
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	registerDto := &dto.RegisterUserDto{
 		Name: "test",
@@ -54,7 +54,7 @@ func TestLogin_Success(t *testing.T) {
 
 	securityHandlers := NewSecurity(securityMock)
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	jsonBody, _ := json.Marshal(loginUserDto)
 
@@ -64,6 +64,38 @@ func TestLogin_Success(t *testing.T) {
 	context := BuildContext(e, req, rec, true)
 
 	if assert.NoError(t, securityHandlers.Login(context)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestUiLogin_Success(t *testing.T) {
+	e := BuildApp()
+	ctrl := gomock.NewController(t)
+	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityHandlers := NewSecurity(securityMock)
+
+	req := httptest.NewRequest(http.MethodPost, "/", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	context := BuildContext(e, req, rec, true)
+
+	if assert.NoError(t, securityHandlers.UiLogin(context)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestUiRegister_Success(t *testing.T) {
+	e := BuildApp()
+	ctrl := gomock.NewController(t)
+	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityHandlers := NewSecurity(securityMock)
+
+	req := httptest.NewRequest(http.MethodPost, "/", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	context := BuildContext(e, req, rec, true)
+
+	if assert.NoError(t, securityHandlers.UiRegister(context)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }

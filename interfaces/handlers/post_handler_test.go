@@ -22,7 +22,7 @@ func TestCreatePost_Success(t *testing.T) {
 		EXPECT().
 		FindAll()
 
-	e := BuildApp(false)
+	e := BuildApp()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
@@ -44,7 +44,7 @@ func TestSavePost_Success(t *testing.T) {
 		EXPECT().
 		Save(gomock.Any())
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	postDto := &dto.PostDto{
 		Title: "test",
@@ -80,7 +80,7 @@ func TestDeletePost_Success(t *testing.T) {
 		EXPECT().
 		Delete(idToDelete)
 
-	e := BuildApp(false)
+	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodDelete, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -112,7 +112,7 @@ func TestUpdatePost_Success(t *testing.T) {
 		EXPECT().
 		Update(gomock.Any())
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	postDto := &dto.PostDto{
 		Title: "test",

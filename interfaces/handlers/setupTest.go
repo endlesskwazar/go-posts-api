@@ -6,18 +6,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
 	"go-cource-api/domain"
+	"go-cource-api/interfaces"
 	"go-cource-api/interfaces/validation"
 	"net/http"
 )
 
-func BuildApp(withValidator bool) *echo.Echo {
+func BuildApp() *echo.Echo {
 	app := echo.New()
-
-	if withValidator {
-		app.Validator = &validation.CustomValidator{
-			Validator: validator.New(),
-		}
+	app.Validator = &validation.CustomValidator{
+		Validator: validator.New(),
 	}
+
+	app.Renderer = interfaces.Renderer()
 
 	return app
 }

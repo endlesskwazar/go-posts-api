@@ -24,13 +24,13 @@ func TestSaveComment_Success(t *testing.T) {
 		EXPECT().
 		Save(gomock.Any())
 
-	e := BuildApp(true)
+	e := BuildApp()
 
-	postDto := &dto.CommentDto{
+	commentDto := &dto.CommentDto{
 		Body: "test",
 	}
 
-	jsonBody, _ := json.Marshal(postDto)
+	jsonBody, _ := json.Marshal(commentDto)
 
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -39,9 +39,7 @@ func TestSaveComment_Success(t *testing.T) {
 	context.SetParamNames("postId")
 	context.SetParamValues("1")
 
-	h := commentHandlers
-
-	if assert.NoError(t, h.Save(context)) {
+	if assert.NoError(t, commentHandlers.Save(context)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 	}
 }
@@ -56,7 +54,7 @@ func TestFindByPostId_Success(t *testing.T) {
 		EXPECT().
 		FindByPostId(postId)
 
-	e := BuildApp(false)
+	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -78,7 +76,7 @@ func TestDeleteComment_Success(t *testing.T) {
 	commentRepo.EXPECT().FindById(uint64(1))
 	commentRepo.EXPECT().Delete(uint64(1))
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -103,7 +101,7 @@ func TestUpdateComment_Success(t *testing.T) {
 
 	commentHandlers := NewComments(commentRepo)
 
-	e := BuildApp(true)
+	e := BuildApp()
 
 	updateCommentDto := &dto.UpdateCommentDto{
 		Body: "test",
