@@ -42,6 +42,20 @@ func SeedPost(db *gorm.DB) *entity.Post {
 	return post
 }
 
+func SeedComment(db *gorm.DB) *entity.Comment {
+	post := SeedPost(db)
+
+	comment := &entity.Comment{
+		Body: "Test body",
+		UserId: post.UserId,
+		PostId: post.Id,
+	}
+
+	db.Create(comment)
+
+	return comment
+}
+
 func setUpTestDb() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 
@@ -49,7 +63,7 @@ func setUpTestDb() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err = db.Debug().AutoMigrate(
+	if err = db.AutoMigrate(
 		entity.User{},
 		entity.Comment{},
 		entity.Post{},

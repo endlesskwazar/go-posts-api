@@ -12,7 +12,7 @@ type commentApp struct {
 var _ CommentAppInterface = &commentApp{}
 
 type CommentAppInterface interface {
-	Save(comment *entity.Comment) (*entity.Comment, map[string]string)
+	Save(comment *entity.Comment) (*entity.Comment, error)
 	FindAll() ([]entity.Comment, error)
 	FindById(uint64) (*entity.Comment, error)
 	FindByPostId(postId uint64) ([]entity.Comment, error)
@@ -20,7 +20,7 @@ type CommentAppInterface interface {
 	Update(comment *entity.Comment) error
 }
 
-func (app *commentApp) Save(comment *entity.Comment) (*entity.Comment, map[string]string) {
+func (app *commentApp) Save(comment *entity.Comment) (*entity.Comment, error) {
 	return app.commentRepository.Save(comment)
 }
 

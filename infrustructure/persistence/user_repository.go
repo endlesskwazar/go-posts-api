@@ -17,38 +17,30 @@ func NewUserRepository(db *gorm.DB) *UserRepo {
 
 var _ repository.UserRepository = &UserRepo{}
 
-func (u *UserRepo) FindAll() ([]entity.User, error) {
-	var users []entity.User
-	err := u.db.Debug().Find(&users).Error
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
-}
-
 func (u *UserRepo) FindById(id uint64) (*entity.User, error) {
 	var user entity.User
-	err := u.db.Debug().Where("id = ?", id).Take(&user).Error
-	if err != nil {
+
+	if err := u.db.Where("id = ?", id).Take(&user).Error; err != nil {
 		return nil, err
 	}
+
 	return &user, nil
 }
 
 func (u *UserRepo) Save(user *entity.User) (*entity.User, error) {
-	err := u.db.Debug().Create(&user).Error
-	if err != nil {
+	if err := u.db.Create(&user).Error; err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 
 func (u *UserRepo) FindByEmail(email string) (*entity.User, error) {
-	println("executing user repo find by id")
 	user := &entity.User{}
-	err := u.db.Debug().Where("email = ?", email).Take(&user).Error
-	if err != nil {
+
+	if err := u.db.Where("email = ?", email).Take(&user).Error; err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
