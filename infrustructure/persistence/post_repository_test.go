@@ -63,7 +63,7 @@ func TestUpdatePost_Success(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestFindAll_Success(t *testing.T) {
+func TestFindAllPosts_Success(t *testing.T) {
 	conn := DBConn()
 	_ = SeedPost(conn)
 	repo := NewPostRepository(conn)
@@ -73,7 +73,7 @@ func TestFindAll_Success(t *testing.T) {
 	assert.EqualValues(t, len(posts), 1)
 }
 
-func TestFindById_Success(t *testing.T) {
+func TestFindByIdPost_Success(t *testing.T) {
 	conn := DBConn()
 	post := SeedPost(conn)
 	repo := NewPostRepository(conn)
@@ -83,7 +83,7 @@ func TestFindById_Success(t *testing.T) {
 	assert.EqualValues(t, post.Id, foundPost.Id)
 }
 
-func TestFindById_Failure(t *testing.T) {
+func TestFindByIdPost_Failure(t *testing.T) {
 	conn := DBConn()
 	repo := NewPostRepository(conn)
 
@@ -93,7 +93,7 @@ func TestFindById_Failure(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestFindByIdAndUserId_Success(t *testing.T) {
+func TestFindByIdAndUserIdPost_Success(t *testing.T) {
 	conn := DBConn()
 	post := SeedPost(conn)
 	repo := NewPostRepository(conn)
