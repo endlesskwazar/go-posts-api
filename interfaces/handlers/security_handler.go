@@ -7,21 +7,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/thanhpk/randstr"
 	"go-cource-api/application"
+	"go-cource-api/domain"
 	"go-cource-api/domain/entity"
 	"go-cource-api/interfaces/dto"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/facebook"
-	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
-)
-
-var (
-	googleOauthConfig *oauth2.Config
-	facebookOauthConfig *oauth2.Config
 )
 
 type Security struct {
@@ -34,7 +27,7 @@ func NewSecurity(app application.SecurityAppInterface) *Security {
 	}
 }
 
-func (u *Security) Register(c echo.Context) error  {
+func (u *Security) Register(c echo.Context) error {
 	registerUserDto := new(dto.RegisterUserDto)
 
 	if err := c.Bind(registerUserDto); err != nil {
@@ -46,8 +39,8 @@ func (u *Security) Register(c echo.Context) error  {
 	}
 
 	user := &entity.User{
-		Name: registerUserDto.Name,
-		Email: registerUserDto.Email,
+		Name:     registerUserDto.Name,
+		Email:    registerUserDto.Email,
 		Password: registerUserDto.Password,
 	}
 
@@ -57,7 +50,8 @@ func (u *Security) Register(c echo.Context) error  {
 		return err
 	}
 
-	return c.String(http.StatusOK, "qwe")
+	// TODO: do something here
+	return c.JSON(http.StatusNoContent, nil)
 }
 
 func (u *Security) Login(c echo.Context) error {
@@ -77,185 +71,95 @@ func (u *Security) Login(c echo.Context) error {
 		return err
 	}
 
+	return c.JSON(http.StatusOK, &domain.Token{Token: *tokenString})
+}
+
+func (u *Security) SocialRedirect(c echo.Context) error {
+	config := c.Get("config").(*application.Config)
+	var redirectUrl string
+
+	switch provider := c.Param("provider"); provider {
+	case "google":
+		redirectUrl = config.GoogleOauthConfig.AuthCodeURL("state")
+	case "facebook":
+		redirectUrl = config.FaceBookOauthConfig.AuthCodeURL("state")
+	}
+
+	if err := c.Redirect(http.StatusFound, redirectUrl); err != nil {
+		return err
+	}
+
+	// TODO: return error
+	return c.String(200, "qweqwe")
+}
+
+func (u *Security) SocialLoginSuccess(c echo.Context) error {
+	provider := c.Param("provider")
+	code := c.QueryParam("code")
+	config := c.Get("config").(*application.Config)
+
+	var userInfoUrl string
+
+	switch provider {
+	case "google":
+		exchange, err := config.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
+		if err != nil {
+			return fmt.Errorf("code exchange failed: %s", err.Error())
+		}
+		userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken
+	case "facebook":
+		exchange, err := config.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
+		if err != nil {
+			return fmt.Errorf("code exchange failed: %s", err.Error())
+		}
+		userInfoUrl = "https://graph.facebook.com/me?fields=name,first_name,last_name,email&access_token=" + exchange.AccessToken
+	}
+
+	userInfo, err := getUserInfo(userInfoUrl)
+
+	if err != nil {
+		return err
+	}
+
+	var result map[string]interface{}
+	err = json.Unmarshal(userInfo, &result)
+
+	if err != nil {
+		return err
+	}
+
+	user, err := u.app.FindUserByEmail(result["email"].(string))
+
+	if err != nil {
+		println(err.Error())
+	}
+
+	// No user in Db -> create
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		user = &entity.User{
+			Email:    result["email"].(string),
+			Name:     result["name"].(string),
+			Password: randstr.Hex(16),
+		}
+
+		err := u.app.RegisterUser(user)
+
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
+	}
+
+	token, err := u.app.GenerateToken(*user)
+
+	if err != nil {
+		return err
+	}
+
 	type Res struct {
 		Token string `json:"token"`
 	}
 
-	return c.JSON(http.StatusOK, &Res{Token: *tokenString})
-}
-
-func(u *Security) SocialRedirect(c echo.Context) error {
-	provider := c.Param("provider")
-
-	if provider == "google" {
-		googleClientId := os.Getenv("GOOGLE_CLIENT_ID")
-		googleClientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
-		googleOauthConfig = &oauth2.Config{
-			ClientID:     googleClientId,
-			ClientSecret: googleClientSecret,
-			RedirectURL:  "http://localhost:8000/auth/social/google/success",
-			Scopes: []string{
-				"profile",
-				"email",
-			},
-			Endpoint: google.Endpoint,
-		}
-
-		// TODO: randomize state
-		url := googleOauthConfig.AuthCodeURL("state")
-		err := c.Redirect(http.StatusFound, url)
-		if err != nil {
-			return err
-		}
-	}
-
-	if provider == "facebook" {
-		facebookClientId := os.Getenv("FACEBOOK_CLIENT_ID")
-		facebookClientSecret := os.Getenv("FACEBOOK_CLIENT_SECRET")
-		facebookOauthConfig = &oauth2.Config{
-			ClientID: facebookClientId,
-			ClientSecret: facebookClientSecret,
-			RedirectURL: "http://localhost:8000/auth/social/facebook/success",
-			Scopes: []string{
-				"public_profile",
-				"email",
-			},
-			Endpoint: facebook.Endpoint,
-		}
-
-		url := facebookOauthConfig.AuthCodeURL("state")
-		err := c.Redirect(http.StatusFound, url)
-		if err != nil {
-			return err
-		}
-	}
-
-	return c.String(200, provider)
-}
-
-func(u *Security) SocialLoginSuccess(c echo.Context) error {
-	provider := c.Param("provider")
-	code := c.QueryParam("code")
-
-	if provider == "google" {
-		exchange, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
-
-		if err != nil {
-			return fmt.Errorf("code exchange failed: %s", err.Error())
-		}
-
-		userInfoUrl := "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken
-
-		userInfo, err := getUserInfo(userInfoUrl)
-
-		if err != nil {
-			// TODO: return some predefined error
-			return err
-		}
-
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(userInfo), &result)
-
-		if err != nil {
-			return err
-		}
-
-		user, err := u.app.FindUserByEmail(result["email"].(string))
-
-		if err != nil {
-			println("errors isnt empty")
-			println(err.Error())
-		}
-
-		// No user in Db -> create
-		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-			user = &entity.User{
-				Email: result["email"].(string),
-				Name: result["name"].(string),
-				Password: randstr.Hex(16),
-			}
-
-			err := u.app.RegisterUser(user)
-
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, err)
-			}
-		}
-
-		token, err := u.app.GenerateToken(*user)
-
-		if err != nil {
-			println("token error")
-			return err
-		}
-
-		type Res struct {
-			Token string `json:"token"`
-		}
-
-		return c.JSON(200, &Res{Token: *token})
-	}
-
-	if provider == "facebook" {
-		exchange, err := facebookOauthConfig.Exchange(oauth2.NoContext, code)
-
-		if err != nil {
-			return fmt.Errorf("code exchange failed: %s", err.Error())
-		}
-
-		userInfoUrl := "https://graph.facebook.com/me?fields=name,first_name,last_name,email&access_token=" + exchange.AccessToken
-
-		userInfo, err := getUserInfo(userInfoUrl)
-
-		if err != nil {
-			// TODO: return some predefined error
-			return err
-		}
-
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(userInfo), &result)
-
-		if err != nil {
-			return err
-		}
-
-		user, err := u.app.FindUserByEmail(result["email"].(string))
-
-		if err != nil {
-			println("errors isnt empty")
-			println(err.Error())
-		}
-
-		// No user in Db -> create
-		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-			user = &entity.User{
-				Email: result["email"].(string),
-				Name: result["name"].(string),
-				Password: randstr.Hex(16),
-			}
-
-			err := u.app.RegisterUser(user)
-
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, err)
-			}
-		}
-
-		token, err := u.app.GenerateToken(*user)
-
-		if err != nil {
-			println("token error")
-			return err
-		}
-
-		type Res struct {
-			Token string `json:"token"`
-		}
-
-		return c.JSON(200, &Res{Token: *token})
-	}
-
-	return echo.NewHTTPError(500, "Unsupported Ouath redirect")
+	return c.JSON(200, &Res{Token: *token})
 }
 
 func getUserInfo(userDetailsUrl string) ([]byte, error) {
@@ -280,11 +184,10 @@ func getUserInfo(userDetailsUrl string) ([]byte, error) {
 	return contents, nil
 }
 
-func(u *Security) UiLogin(c echo.Context) error {
+func (u *Security) UiLogin(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
 }
 
-func(u *Security) UiRegister(c echo.Context) error {
+func (u *Security) UiRegister(c echo.Context) error {
 	return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
 }
-
