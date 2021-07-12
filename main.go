@@ -4,11 +4,11 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
-	appMiddlewares "go-cource-api/application/middlewares"
 	"go-cource-api/infrustructure"
 	"go-cource-api/infrustructure/persistence"
-	"go-cource-api/infrustructure/validation"
 	"go-cource-api/interfaces/handlers"
+	"go-cource-api/interfaces/middlewares"
+	validation2 "go-cource-api/interfaces/validation"
 )
 
 func main() {
@@ -35,15 +35,15 @@ func main() {
 	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
 
 	e := echo.New()
-	e.Use(appMiddlewares.ConfigInjectorMiddleware(config))
-	e.Validator = &validation.CustomValidator{
+	e.Use(middlewares.ConfigInjectorMiddleware(config))
+	e.Validator = &validation2.CustomValidator{
 		Validator: validator.New(),
 	}
 	e.Renderer = Renderer()
 	apiV1 := e.Group("/api/v1")
-	apiV1.Use(appMiddlewares.SecurityContextMiddleware)
+	apiV1.Use(middlewares.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")
-	restrictedApiV1.Use(appMiddlewares.AuthMiddleware())
+	restrictedApiV1.Use(middlewares.AuthMiddleware())
 
 	// Auth
 	e.GET("/login", security.UiLogin)
