@@ -35,3 +35,4 @@ docker-compose exec go go test -v go-cource-api/interfaces/handlers
 - [ ] Add content negotiation
 - [ ] Add CI Dron tests pipeline
 - [ ] Protect comment form non owner delete
+- [ ] Extract test database config to envs

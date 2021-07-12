@@ -50,7 +50,6 @@ func (u *Security) Register(c echo.Context) error {
 		return err
 	}
 
-	// TODO: do something here
 	return c.JSON(http.StatusNoContent, nil)
 }
 
