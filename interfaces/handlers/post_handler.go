@@ -30,6 +30,23 @@ func (p *Posts) List(c echo.Context) error {
 	return responseResponder.Respond(c, http.StatusOK, posts)
 }
 
+func (p *Posts) FindOne(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return err
+	}
+
+	post, err := p.app.FindById(uint64(id))
+
+	if err != nil {
+		return err
+	}
+
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusOK, post)
+}
+
 func (p *Posts) Save(c echo.Context) error {
 	postDto := new(dto.PostDto)
 

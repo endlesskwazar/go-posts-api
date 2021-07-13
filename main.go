@@ -59,6 +59,7 @@ func main() {
 
 	// Public API
 	apiV1.GET("/posts", posts.List)
+	apiV1.GET("/posts/:id", posts.FindOne)
 	apiV1.GET("/posts/:postId/comments", comments.FindByPostId)
 
 	// Private API

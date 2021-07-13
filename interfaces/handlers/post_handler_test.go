@@ -36,6 +36,34 @@ func TestListPost_Success(t *testing.T) {
 	}
 }
 
+func TestLFindOnePost_Success(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	postRepoMock := mock.NewMockPostRepository(ctrl)
+	postHandlers := NewPosts(postRepoMock)
+	postIdStr := "1"
+	postIdInt := uint64(1)
+
+	postRepoMock.EXPECT().FindById(postIdInt)
+
+	e := BuildApp()
+
+	reqJson := httptest.NewRequest(http.MethodGet, "/", nil)
+	reqJson.Header.Set(echo.HeaderAccept, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := BuildContext(e, reqJson, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(postIdStr)
+
+	if assert.NoError(t, postHandlers.FindOne(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(
+			t,
+			echo.MIMEApplicationJSONCharsetUTF8,
+			rec.Header().Get(echo.HeaderContentType),
+		)
+	}
+}
+
 func TestSavePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
