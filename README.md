@@ -27,7 +27,7 @@ docker-compose exec go go test -v go-cource-api/interfaces/handlers
 - [ ] Fix docker development setup clashing with local go
 - [ ] Fix database migrations on every test(Migrate once and rollback inserted data after each test)
 - [ ] Implement Twitter oauth(waiting for dev acc app verification)
-- [ ] Implement Own errors with extended information. Implement Own error handler
+- [ ] Implement Own error handler
 - [ ] Implement refresh token and token expiration
 - [ ] Try to use identity broker for all Auth e.g keycloak
 - [X] Make modular routing
