@@ -4,17 +4,17 @@ import (
 	unsecureJWT "github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application/config"
+	"go-cource-api/application"
 	"go-cource-api/infrustructure/security"
 	"net/http"
 )
 
 func BuildApp() *echo.Echo {
 	app := echo.New()
-	app.Validator = &config.CustomValidator{
+	app.Validator = &application.CustomValidator{
 		Validator: validator.New(),
 	}
-	app.Renderer = config.Renderer()
+	app.Renderer = application.Renderer()
 
 	return app
 }
@@ -22,7 +22,7 @@ func BuildApp() *echo.Echo {
 func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.Context {
 	context := app.NewContext(r, w)
 
-	cc := config.SecurityContext{
+	cc := application.SecurityContext{
 		Context: context,
 	}
 
@@ -36,7 +36,7 @@ func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.C
 	}
 
 	context.Set("user", user)
-	context.Set("responseResponder", config.NewResponseResponder())
+	context.Set("responseResponder", application.NewResponseResponder())
 
 	return &cc
 }

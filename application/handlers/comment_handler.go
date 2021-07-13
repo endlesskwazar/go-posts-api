@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application/config"
-	dto2 "go-cource-api/application/dto"
+	"go-cource-api/application"
+	"go-cource-api/application/dto"
 	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
 	"net/http"
@@ -33,12 +33,12 @@ func (p *Comments) FindByPostId(c echo.Context) error {
 		return err
 	}
 
-	responder := c.Get("responseResponder").(config.Responder)
+	responder := c.Get("responseResponder").(application.Responder)
 	return responder.Respond(c, http.StatusOK, comments)
 }
 
 func (p *Comments) Save(c echo.Context) error {
-	commentDto := new(dto2.CommentDto)
+	commentDto := new(dto.CommentDto)
 
 	if err := c.Bind(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -48,7 +48,7 @@ func (p *Comments) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	securityContext := c.(*config.SecurityContext)
+	securityContext := c.(*application.SecurityContext)
 
 	postId, err := strconv.Atoi(c.Param("postId"))
 
@@ -67,12 +67,12 @@ func (p *Comments) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	responder := c.Get("responseResponder").(config.Responder)
+	responder := c.Get("responseResponder").(application.Responder)
 	return responder.Respond(c, http.StatusCreated, comment)
 }
 
 func (p *Comments) Update(c echo.Context) error {
-	commentDto := new(dto2.CommentDto)
+	commentDto := new(dto.CommentDto)
 
 	if err := c.Bind(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -94,7 +94,7 @@ func (p *Comments) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, err)
 	}
 
-	securityContext := c.(*config.SecurityContext)
+	securityContext := c.(*application.SecurityContext)
 
 	if comment.UserId != securityContext.UserClaims().Id {
 		return echo.NewHTTPError(http.StatusNotFound, "Not found")
@@ -106,13 +106,13 @@ func (p *Comments) Update(c echo.Context) error {
 		return err
 	}
 
-	responder := c.Get("responseResponder").(config.Responder)
+	responder := c.Get("responseResponder").(application.Responder)
 	return responder.Respond(c, http.StatusOK, comment)
 }
 
 func (p *Comments) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	cc := c.(*config.SecurityContext)
+	securityContext := c.(*application.SecurityContext)
 
 	if err != nil {
 		return err
@@ -124,12 +124,12 @@ func (p *Comments) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, err)
 	}
 
-	if cc.UserClaims().Id != comment.UserId {
+	if securityContext.UserClaims().Id != comment.UserId {
 		return echo.NewHTTPError(http.StatusForbidden, "You can't perform operation")
 	}
 
 	if err = p.app.Delete(uint64(id)); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return err
 	}
 
 	return c.NoContent(http.StatusNoContent)

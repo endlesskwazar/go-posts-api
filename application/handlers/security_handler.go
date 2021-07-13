@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/thanhpk/randstr"
-	config2 "go-cource-api/application/config"
-	dto2 "go-cource-api/application/dto"
+	"go-cource-api/application/config"
+	"go-cource-api/application/dto"
 	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/security"
@@ -29,7 +29,7 @@ func NewSecurity(app services.SecurityAppInterface) *Security {
 }
 
 func (u *Security) Register(c echo.Context) error {
-	registerUserDto := new(dto2.RegisterUserDto)
+	registerUserDto := new(dto.RegisterUserDto)
 
 	if err := c.Bind(registerUserDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -55,7 +55,7 @@ func (u *Security) Register(c echo.Context) error {
 }
 
 func (u *Security) Login(c echo.Context) error {
-	loginUserDto := new(dto2.LoginUserDto)
+	loginUserDto := new(dto.LoginUserDto)
 
 	if err := c.Bind(loginUserDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -75,14 +75,14 @@ func (u *Security) Login(c echo.Context) error {
 }
 
 func (u *Security) SocialRedirect(c echo.Context) error {
-	config := c.Get("config").(*config2.Config)
+	appConfig := c.Get("config").(*config.Config)
 	var redirectUrl string
 
 	switch provider := c.Param("provider"); provider {
 	case "google":
-		redirectUrl = config.GoogleOauthConfig.AuthCodeURL("state")
+		redirectUrl = appConfig.GoogleOauthConfig.AuthCodeURL("state")
 	case "facebook":
-		redirectUrl = config.FaceBookOauthConfig.AuthCodeURL("state")
+		redirectUrl = appConfig.FaceBookOauthConfig.AuthCodeURL("state")
 	}
 
 	if err := c.Redirect(http.StatusFound, redirectUrl); err != nil {
@@ -96,19 +96,19 @@ func (u *Security) SocialRedirect(c echo.Context) error {
 func (u *Security) SocialLoginSuccess(c echo.Context) error {
 	provider := c.Param("provider")
 	code := c.QueryParam("code")
-	config := c.Get("config").(*config2.Config)
+	appConfig := c.Get("config").(*config.Config)
 
 	var userInfoUrl string
 
 	switch provider {
 	case "google":
-		exchange, err := config.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
+		exchange, err := appConfig.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
 		if err != nil {
 			return fmt.Errorf("code exchange failed: %s", err.Error())
 		}
 		userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken
 	case "facebook":
-		exchange, err := config.FaceBookOauthConfig.Exchange(oauth2.NoContext, code)
+		exchange, err := appConfig.FaceBookOauthConfig.Exchange(oauth2.NoContext, code)
 		if err != nil {
 			return fmt.Errorf("code exchange failed: %s", err.Error())
 		}

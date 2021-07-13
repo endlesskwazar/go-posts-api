@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"go-cource-api/application/_mocks"
-	dto2 "go-cource-api/application/dto"
+	mock "go-cource-api/application/_mocks"
+	dto "go-cource-api/application/dto"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +15,7 @@ import (
 
 func TestListPost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	postRepoMock := mock.mock.NewMockPostRepository(ctrl)
+	postRepoMock := mock.NewMockPostRepository(ctrl)
 	postRepoMock.EXPECT().FindAll()
 	postHandlers := NewPosts(postRepoMock)
 
@@ -70,7 +70,7 @@ func TestSavePost_Success(t *testing.T) {
 	postRepo.EXPECT().Save(gomock.Any())
 	postHandlers := NewPosts(postRepo)
 
-	postDto := &dto2.PostDto{
+	postDto := &dto.PostDto{
 		Title: "test",
 		Body:  "test",
 	}
@@ -137,7 +137,7 @@ func TestUpdatePost_Success(t *testing.T) {
 
 	e := BuildApp()
 
-	postDto := &dto2.PostDto{
+	postDto := &dto.PostDto{
 		Title: "test",
 		Body:  "test",
 	}

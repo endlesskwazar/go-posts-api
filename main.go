@@ -3,22 +3,23 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	config2 "go-cource-api/application/config"
-	handlers2 "go-cource-api/application/handlers"
-	middlewares2 "go-cource-api/application/middlewares"
+	"go-cource-api/application"
+	"go-cource-api/application/config"
+	"go-cource-api/application/handlers"
+	"go-cource-api/application/middlewares"
 	"go-cource-api/infrustructure/persistence"
-	security2 "go-cource-api/infrustructure/security"
+	"go-cource-api/infrustructure/security"
 )
 
 func main() {
-	config := config2.NewConfig()
+	appConfig := config.NewConfig()
 
 	services, err := persistence.NewRepositories(
-		config.DatabaseConfig.User,
-		config.DatabaseConfig.Password,
-		config.DatabaseConfig.Port,
-		config.DatabaseConfig.Host,
-		config.DatabaseConfig.DbName,
+		appConfig.DatabaseConfig.User,
+		appConfig.DatabaseConfig.Password,
+		appConfig.DatabaseConfig.Port,
+		appConfig.DatabaseConfig.Host,
+		appConfig.DatabaseConfig.DbName,
 	)
 
 	if err != nil {
@@ -29,47 +30,47 @@ func main() {
 		panic(err)
 	}
 
-	posts := handlers2.NewPosts(services.Post)
-	comments := handlers2.NewComments(services.Comment)
-	security := handlers2.NewSecurity(security2.NewSecurity(services.User))
+	postHandlers := handlers.NewPosts(services.Post)
+	commentHandlers := handlers.NewComments(services.Comment)
+	securityHandlers := handlers.NewSecurity(security.NewSecurity(services.User))
 
-	responseResponder := config2.NewResponseResponder()
+	responseResponder := application.NewResponseResponder()
 
 	e := echo.New()
-	e.Use(middlewares2.ConfigInjectorMiddleware(config))
-	e.Use(middlewares2.ResponderInjectorMiddleware(responseResponder))
-	e.Validator = &config2.CustomValidator{
+	e.Use(middlewares.ConfigInjectorMiddleware(appConfig))
+	e.Use(middlewares.ResponderInjectorMiddleware(responseResponder))
+	e.Validator = &application.CustomValidator{
 		Validator: validator.New(),
 	}
-	e.Renderer = config2.Renderer()
+	e.Renderer = application.Renderer()
 	apiV1 := e.Group("/api/v1")
-	apiV1.Use(middlewares2.SecurityContextMiddleware)
+	apiV1.Use(middlewares.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")
-	restrictedApiV1.Use(middlewares2.AuthMiddleware())
+	restrictedApiV1.Use(middlewares.AuthMiddleware())
 
 	// Auth
-	e.GET("/login", security.UiLogin)
-	e.GET("/register", security.UiRegister)
-	e.GET("/auth/social/:provider", security.SocialRedirect)
-	e.GET("/auth/social/:provider/success", security.SocialLoginSuccess)
-	apiV1.POST("/register", security.Register)
-	apiV1.POST("/login", security.Login)
+	e.GET("/login", securityHandlers.UiLogin)
+	e.GET("/register", securityHandlers.UiRegister)
+	e.GET("/auth/social/:provider", securityHandlers.SocialRedirect)
+	e.GET("/auth/social/:provider/success", securityHandlers.SocialLoginSuccess)
+	apiV1.POST("/register", securityHandlers.Register)
+	apiV1.POST("/login", securityHandlers.Login)
 
 	// Public API
-	apiV1.GET("/posts", posts.List)
-	apiV1.GET("/posts/:id", posts.FindOne)
-	apiV1.GET("/posts/:postId/comments", comments.FindByPostId)
+	apiV1.GET("/posts", postHandlers.List)
+	apiV1.GET("/posts/:id", postHandlers.FindOne)
+	apiV1.GET("/posts/:postId/comments", commentHandlers.FindByPostId)
 
 	// Private API
-	restrictedApiV1.POST("/posts", posts.Save)
-	restrictedApiV1.DELETE("/posts/:id", posts.Delete)
-	restrictedApiV1.PUT("/posts/:id", posts.Update)
+	restrictedApiV1.POST("/posts", postHandlers.Save)
+	restrictedApiV1.DELETE("/posts/:id", postHandlers.Delete)
+	restrictedApiV1.PUT("/posts/:id", postHandlers.Update)
 
-	restrictedApiV1.POST("/posts/:postId/comments", comments.Save)
-	restrictedApiV1.DELETE("/comments/:id", comments.Delete)
-	restrictedApiV1.PUT("/comments/:id", comments.Update)
+	restrictedApiV1.POST("/posts/:postId/comments", commentHandlers.Save)
+	restrictedApiV1.DELETE("/comments/:id", commentHandlers.Delete)
+	restrictedApiV1.PUT("/comments/:id", commentHandlers.Update)
 
 	// Start server
-	serverUrl := ":" + config.AppConfig.Port
+	serverUrl := ":" + appConfig.AppConfig.Port
 	e.Logger.Fatal(e.Start(serverUrl))
 }

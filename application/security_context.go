@@ -1,4 +1,4 @@
-package config
+package application
 
 import (
 	unsecureJWT "github.com/dgrijalva/jwt-go"

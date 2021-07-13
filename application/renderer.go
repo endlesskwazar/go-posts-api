@@ -1,4 +1,4 @@
-package config
+package application
 
 import (
 	"github.com/labstack/echo/v4"
@@ -25,9 +25,9 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 func Renderer() *TemplateRenderer {
 	_, b, _, _ := runtime.Caller(0)
 	d := path.Join(path.Dir(b))
-	path :=  filepath.Dir(d)
+	basePath :=  filepath.Dir(d)
 
 	return &TemplateRenderer{
-		templates: template.Must(template.ParseGlob(path + "/public/views/*.html")),
+		templates: template.Must(template.ParseGlob(basePath + "/public/views/*.html")),
 	}
 }

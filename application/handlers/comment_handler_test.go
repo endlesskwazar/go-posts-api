@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	mock2 "go-cource-api/application/_mocks"
-	dto2 "go-cource-api/application/dto"
+	mock "go-cource-api/application/_mocks"
+	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +16,7 @@ import (
 
 func TestFindByPostId_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	commentRepo := mock2.NewMockCommentRepository(ctrl)
+	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewComments(commentRepo)
 	postId := uint64(1)
 
@@ -41,14 +41,14 @@ func TestFindByPostId_Success(t *testing.T) {
 
 func TestSaveComment_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	commentRepo := mock2.NewMockCommentRepository(ctrl)
+	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewComments(commentRepo)
 
 	commentRepo.EXPECT().Save(gomock.Any())
 
 	e := BuildApp()
 
-	commentDto := &dto2.CommentDto{
+	commentDto := &dto.CommentDto{
 		Body: "test",
 	}
 
@@ -70,7 +70,7 @@ func TestSaveComment_Success(t *testing.T) {
 
 func TestUpdateComment_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	commentRepo := mock2.NewMockCommentRepository(ctrl)
+	commentRepo := mock.NewMockCommentRepository(ctrl)
 
 	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: uint64(1)}, nil)
 	commentRepo.EXPECT().Update(gomock.Any())
@@ -79,7 +79,7 @@ func TestUpdateComment_Success(t *testing.T) {
 
 	e := BuildApp()
 
-	updateCommentDto := &dto2.UpdateCommentDto{
+	updateCommentDto := &dto.UpdateCommentDto{
 		Body: "test",
 	}
 
@@ -102,24 +102,21 @@ func TestUpdateComment_Success(t *testing.T) {
 
 func TestDeleteComment_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	commentRepo := mock2.NewMockCommentRepository(ctrl)
+	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewComments(commentRepo)
 
-	commentRepo.EXPECT().FindById(uint64(1))
+	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: uint64(1)}, nil)
 	commentRepo.EXPECT().Delete(uint64(1))
 
 	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec)
-	context.SetParamNames("id")
-	context.SetParamValues("1")
+	c := BuildContext(e, req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues("1")
 
-	h := commentHandlers
-
-	if assert.NoError(t, h.Delete(context)) {
+	if assert.NoError(t, commentHandlers.Delete(c)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
 	}
 }

@@ -2,11 +2,11 @@ package services
 
 import (
 	"go-cource-api/domain/entity"
-	security2 "go-cource-api/infrustructure/security"
+	"go-cource-api/infrustructure/security"
 )
 
 type securityApp struct {
-	security security2.Security
+	security security.JwtSecurity
 }
 
 var _ SecurityAppInterface = &securityApp{}
