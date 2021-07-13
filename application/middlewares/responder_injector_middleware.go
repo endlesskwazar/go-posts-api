@@ -8,7 +8,7 @@ import (
 func ResponderInjectorMiddleware(responseResponder *application.ResponseResponder) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("responseResponder", responseResponder)
+			c.Set("responder", responseResponder)
 			return next(c)
 		}
 	}

@@ -36,7 +36,7 @@ func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.C
 	}
 
 	context.Set("user", user)
-	context.Set("responseResponder", application.NewResponseResponder())
+	context.Set("responder", application.NewResponseResponder())
 
 	return &cc
 }

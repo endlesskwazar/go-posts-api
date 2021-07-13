@@ -33,7 +33,7 @@ func (p *Comments) FindByPostId(c echo.Context) error {
 		return err
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responder").(application.Responder)
 	return responder.Respond(c, http.StatusOK, comments)
 }
 
@@ -67,7 +67,7 @@ func (p *Comments) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responder").(application.Responder)
 	return responder.Respond(c, http.StatusCreated, comment)
 }
 
@@ -106,7 +106,7 @@ func (p *Comments) Update(c echo.Context) error {
 		return err
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responder").(application.Responder)
 	return responder.Respond(c, http.StatusOK, comment)
 }
 
