@@ -21,11 +21,13 @@ func NewPosts(app application.PostAppInterface) *Posts {
 
 func (p *Posts) List(c echo.Context) error {
 	posts, err := p.app.FindAll()
+	responseResponder := c.Get("responseResponder").(application.Responder)
+
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, posts)
+	return responseResponder.Respond(c, http.StatusOK, posts)
 }
 
 func (p *Posts) Save(c echo.Context) error {
@@ -52,16 +54,22 @@ func (p *Posts) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusCreated, post)
+	responder := c.Get("responseResponder").(application.Responder)
+
+	return responder.Respond(c, http.StatusCreated, post)
 }
 
 func (p *Posts) Delete(c echo.Context) error {
-	// TODO: handle error
-	postId, _ := strconv.Atoi(c.Param("id"))
+	postId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return err
+	}
+
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
-	_, err := p.app.FindByIdAndUserId(uint64(postId), userId)
+	_, err = p.app.FindByIdAndUserId(uint64(postId), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
@@ -71,7 +79,8 @@ func (p *Posts) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusNoContent, nil)
 }
 
 func (p *Posts) Update(c echo.Context) error {
@@ -105,5 +114,6 @@ func (p *Posts) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, updatedPost)
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusOK, updatedPost)
 }

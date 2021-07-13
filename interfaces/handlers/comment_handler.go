@@ -94,6 +94,7 @@ func (p *Comments) Update(c echo.Context) error {
 	if err := c.Bind(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
 	if err := c.Validate(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

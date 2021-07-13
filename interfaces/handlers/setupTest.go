@@ -16,33 +16,29 @@ func BuildApp() *echo.Echo {
 	app.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}
-
 	app.Renderer = interfaces.Renderer()
 
 	return app
 }
 
-func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter, withUser bool) echo.Context {
+func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.Context {
 	context := app.NewContext(r, w)
 
-	if withUser {
-		cc := application.SecurityContext{
-			Context: context,
-		}
-
-		claims := &domain.JwtCustomClaims{
-			Id: 1,
-			Email: "test@mail.com",
-		}
-
-		user :=  &unsecureJWT.Token{
-			Claims:claims,
-		}
-
-		context.Set("user", user)
-
-		return &cc
+	cc := application.SecurityContext{
+		Context: context,
 	}
 
-	return context
+	claims := &domain.JwtCustomClaims{
+		Id: 1,
+		Email: "test@mail.com",
+	}
+
+	user :=  &unsecureJWT.Token{
+		Claims:claims,
+	}
+
+	context.Set("user", user)
+	context.Set("responseResponder", application.NewResponseResponder())
+
+	return &cc
 }

@@ -35,8 +35,11 @@ func main() {
 	comments := handlers.NewComments(services.Comment)
 	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
 
+	responseResponder := application.NewResponseResponder()
+
 	e := echo.New()
 	e.Use(middlewares.ConfigInjectorMiddleware(config))
+	e.Use(middlewares.ResponderInjectorMiddleware(responseResponder))
 	e.Validator = &validation.CustomValidator{
 		Validator: validator.New(),
 	}

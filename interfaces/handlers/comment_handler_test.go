@@ -35,7 +35,7 @@ func TestSaveComment_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 	context.SetParamNames("postId")
 	context.SetParamValues("1")
 
@@ -59,7 +59,7 @@ func TestFindByPostId_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, false)
+	context := BuildContext(e, req, rec)
 	context.SetParamNames("postId")
 	context.SetParamValues("1")
 
@@ -81,7 +81,7 @@ func TestDeleteComment_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 	context.SetParamNames("id")
 	context.SetParamValues("1")
 
@@ -108,11 +108,10 @@ func TestUpdateComment_Success(t *testing.T) {
 	}
 
 	jsonBody, _ := json.Marshal(updateCommentDto)
-
 	req := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 	context.SetParamNames("id")
 	context.SetParamValues("1")
 

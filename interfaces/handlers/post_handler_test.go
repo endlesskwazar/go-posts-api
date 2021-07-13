@@ -13,54 +13,50 @@ import (
 	"testing"
 )
 
-func TestCreatePost_Success(t *testing.T) {
+func TestListPost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepoMock := mock.NewMockPostRepository(ctrl)
+	postRepoMock.EXPECT().FindAll()
 	postHandlers := NewPosts(postRepoMock)
 
-	postRepoMock.
-		EXPECT().
-		FindAll()
-
 	e := BuildApp()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	h := postHandlers
 
-	// Assertions
-	if assert.NoError(t, h.List(c)) {
+	reqJson := httptest.NewRequest(http.MethodGet, "/", nil)
+	reqJson.Header.Set(echo.HeaderAccept, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := BuildContext(e, reqJson, rec)
+
+	if assert.NoError(t, postHandlers.List(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(
+			t,
+			echo.MIMEApplicationJSONCharsetUTF8,
+			rec.Header().Get(echo.HeaderContentType),
+		)
 	}
 }
 
 func TestSavePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
+	postRepo.EXPECT().Save(gomock.Any())
 	postHandlers := NewPosts(postRepo)
-
-	postRepo.
-		EXPECT().
-		Save(gomock.Any())
-
-	e := BuildApp()
 
 	postDto := &dto.PostDto{
 		Title: "test",
-		Body: "test",
+		Body:  "test",
 	}
-
 	jsonBody, _ := json.Marshal(postDto)
+
+	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set(echo.HeaderAccept, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	c := BuildContext(e, req, rec)
 
-	h := postHandlers
-
-	if assert.NoError(t, h.Save(context)) {
+	if assert.NoError(t, postHandlers.Save(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 	}
 }
@@ -83,16 +79,15 @@ func TestDeletePost_Success(t *testing.T) {
 	e := BuildApp()
 
 	req := httptest.NewRequest(http.MethodDelete, "/", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set(echo.HeaderAccept, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
-	context.SetPath("/api/v1/posts/:id")
-	context.SetParamNames("id")
-	context.SetParamValues("1")
+	c := BuildContext(e, req, rec)
 
-	h := postHandlers
+	c.SetPath("/api/v1/posts/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("1")
 
-	if assert.NoError(t, h.Delete(context)) {
+	if assert.NoError(t, postHandlers.Delete(c)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
 	}
 }
@@ -101,12 +96,12 @@ func TestUpdatePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
 	postHandlers := NewPosts(postRepo)
-	standartUserId := uint64(1)
+	standardUserId := uint64(1)
 	postIdToUpdate := uint64(1)
 
 	postRepo.
 		EXPECT().
-		FindByIdAndUserId(standartUserId, postIdToUpdate)
+		FindByIdAndUserId(standardUserId, postIdToUpdate)
 
 	postRepo.
 		EXPECT().
@@ -116,22 +111,21 @@ func TestUpdatePost_Success(t *testing.T) {
 
 	postDto := &dto.PostDto{
 		Title: "test",
-		Body: "test",
+		Body:  "test",
 	}
 
 	jsonBody, _ := json.Marshal(postDto)
 
 	req := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set(echo.HeaderAccept, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 	context.SetPath("api/v1/posts/:id")
 	context.SetParamNames("id")
 	context.SetParamValues("1")
 
-	h := postHandlers
-
-	if assert.NoError(t, h.Update(context)) {
+	if assert.NoError(t, postHandlers.Update(context)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }

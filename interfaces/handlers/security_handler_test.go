@@ -33,7 +33,7 @@ func TestRegister_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 
 	if assert.NoError(t, securityHandlers.Register(context)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -61,7 +61,7 @@ func TestLogin_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(jsonBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 
 	if assert.NoError(t, securityHandlers.Login(context)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -77,7 +77,7 @@ func TestUiLogin_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 
 	if assert.NoError(t, securityHandlers.UiLogin(context)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -93,7 +93,7 @@ func TestUiRegister_Success(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	context := BuildContext(e, req, rec, true)
+	context := BuildContext(e, req, rec)
 
 	if assert.NoError(t, securityHandlers.UiRegister(context)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
