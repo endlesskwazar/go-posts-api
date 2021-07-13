@@ -30,7 +30,7 @@ docker-compose exec go go test -v go-cource-api/interfaces/handlers
 - [ ] Implement Own errors with extended information. Implement Own error handler
 - [ ] Implement refresh token and token expiration
 - [ ] Try to use identity broker for all Auth e.g keycloak
-- [ ] Make modular routing
+- [X] Make modular routing
 - [x] Add content negotiation
 - [ ] Add CI Dron tests pipeline
 - [x] Protect comment form non owner delete

@@ -9,6 +9,7 @@ import (
 	"go-cource-api/application/middlewares"
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/security"
+	"go-cource-api/routes"
 )
 
 func main() {
@@ -43,32 +44,9 @@ func main() {
 		Validator: validator.New(),
 	}
 	e.Renderer = application.Renderer()
-	apiV1 := e.Group("/api/v1")
-	apiV1.Use(middlewares.SecurityContextMiddleware)
-	restrictedApiV1 := apiV1.Group("")
-	restrictedApiV1.Use(middlewares.AuthMiddleware())
 
-	// Auth
-	e.GET("/login", securityHandlers.UiLogin)
-	e.GET("/register", securityHandlers.UiRegister)
-	e.GET("/auth/social/:provider", securityHandlers.SocialRedirect)
-	e.GET("/auth/social/:provider/success", securityHandlers.SocialLoginSuccess)
-	apiV1.POST("/register", securityHandlers.Register)
-	apiV1.POST("/login", securityHandlers.Login)
-
-	// Public API
-	apiV1.GET("/posts", postHandlers.List)
-	apiV1.GET("/posts/:id", postHandlers.FindOne)
-	apiV1.GET("/posts/:postId/comments", commentHandlers.FindByPostId)
-
-	// Private API
-	restrictedApiV1.POST("/posts", postHandlers.Save)
-	restrictedApiV1.DELETE("/posts/:id", postHandlers.Delete)
-	restrictedApiV1.PUT("/posts/:id", postHandlers.Update)
-
-	restrictedApiV1.POST("/posts/:postId/comments", commentHandlers.Save)
-	restrictedApiV1.DELETE("/comments/:id", commentHandlers.Delete)
-	restrictedApiV1.PUT("/comments/:id", commentHandlers.Update)
+	routes.InitAuthRoutes(e, securityHandlers)
+	routes.InitApiV1Routes(e, postHandlers, commentHandlers)
 
 	// Start server
 	serverUrl := ":" + appConfig.AppConfig.Port
