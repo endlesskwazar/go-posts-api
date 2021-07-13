@@ -5,12 +5,12 @@ import (
 )
 
 type Comment struct {
-	Id        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	Body      string    `gorm:"size:500;not null;default:null" json:"body"`
-	PostId    uint64    `gorm:"not null;default:null" json:"postId"`
-	UserId    uint64    `gorm:"not null;default:null" json:"userId"`
-	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"createAt"`
-	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updatedAt"`
-	Post      Post      `json:"-"`
-	User      User      `json:"-"`
+	Id        uint64    `gorm:"primary_key;auto_increment" json:"id" xml:"id"`
+	Body      string    `gorm:"size:500;not null;default:null" json:"body" xml:"body"`
+	PostId    uint64    `gorm:"not null;default:null" json:"postId" xml:"post_id"`
+	UserId    uint64    `gorm:"not null;default:null" json:"userId" xml:"user_id"`
+	CreatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"createAt" xml:"created_at"`
+	UpdatedAt time.Time `sql:"DEFAULT:current_timestamp" json:"updatedAt" xml:"updated_at"`
+	Post      Post      `json:"-" xml:"-"`
+	User      User      `json:"-" xml:"-"`
 }

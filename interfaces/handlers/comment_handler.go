@@ -19,6 +19,23 @@ func NewComments(app application.CommentAppInterface) *Comments {
 	}
 }
 
+func (p *Comments) FindByPostId(c echo.Context) error {
+	postId, err := strconv.Atoi(c.Param("postId"))
+
+	if err != nil {
+		return err
+	}
+
+	comments, err := p.app.FindByPostId(uint64(postId))
+
+	if err != nil {
+		return err
+	}
+
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusOK, comments)
+}
+
 func (p *Comments) Save(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
 
@@ -49,43 +66,8 @@ func (p *Comments) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusCreated, comment)
-}
-
-func (p *Comments) FindByPostId(c echo.Context) error {
-	postId, err := strconv.Atoi(c.Param("postId"))
-
-	if err != nil {
-		return err
-	}
-
-	comments, err := p.app.FindByPostId(uint64(postId))
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, comments)
-}
-
-func (p *Comments) Delete(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-
-	if err != nil {
-		return err
-	}
-
-	_, err = p.app.FindById(uint64(id))
-
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
-	}
-
-	if err = p.app.Delete(uint64(id)); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-
-	return c.JSON(http.StatusNoContent, nil)
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusCreated, comment)
 }
 
 func (p *Comments) Update(c echo.Context) error {
@@ -113,7 +95,6 @@ func (p *Comments) Update(c echo.Context) error {
 
 	securityContext := c.(*application.SecurityContext)
 
-	// TODO: extruct to own error
 	if comment.UserId != securityContext.UserClaims().Id {
 		return echo.NewHTTPError(http.StatusNotFound, "Not found")
 	}
@@ -124,5 +105,26 @@ func (p *Comments) Update(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, comment)
+	responder := c.Get("responseResponder").(application.Responder)
+	return responder.Respond(c, http.StatusOK, comment)
+}
+
+func (p *Comments) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return err
+	}
+
+	_, err = p.app.FindById(uint64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err)
+	}
+
+	if err = p.app.Delete(uint64(id)); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusNoContent, nil)
 }
