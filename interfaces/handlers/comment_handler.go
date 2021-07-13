@@ -111,20 +111,25 @@ func (p *Comments) Update(c echo.Context) error {
 
 func (p *Comments) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	cc := c.(*application.SecurityContext)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = p.app.FindById(uint64(id))
+	comment, err := p.app.FindById(uint64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
+	}
+
+	if cc.UserClaims().Id != comment.UserId {
+		return echo.NewHTTPError(http.StatusForbidden, "You can't perform operation")
 	}
 
 	if err = p.app.Delete(uint64(id)); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
