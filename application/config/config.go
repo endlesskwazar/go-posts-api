@@ -1,4 +1,4 @@
-package application
+package config
 
 import (
 	"golang.org/x/oauth2"
@@ -17,6 +17,7 @@ type DatabaseConfig struct {
 
 type AppConfig struct {
 	Port string
+	Env string
 }
 
 type Config struct {
@@ -29,6 +30,7 @@ type Config struct {
 func NewConfig() *Config {
 	appConfig := &AppConfig{
 		Port: os.Getenv("APP_PORT"),
+		Env: os.Getenv("APP_ENV"),
 	}
 	databaseConfig := &DatabaseConfig{
 		Host: os.Getenv("DB_HOST"),

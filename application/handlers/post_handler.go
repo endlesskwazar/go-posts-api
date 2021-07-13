@@ -2,18 +2,19 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application"
+	"go-cource-api/application/config"
+	dto2 "go-cource-api/application/dto"
+	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
-	"go-cource-api/interfaces/dto"
 	"net/http"
 	"strconv"
 )
 
 type Posts struct {
-	app application.PostAppInterface
+	app services.PostAppInterface
 }
 
-func NewPosts(app application.PostAppInterface) *Posts {
+func NewPosts(app services.PostAppInterface) *Posts {
 	return &Posts{
 		app: app,
 	}
@@ -21,7 +22,7 @@ func NewPosts(app application.PostAppInterface) *Posts {
 
 func (p *Posts) List(c echo.Context) error {
 	posts, err := p.app.FindAll()
-	responseResponder := c.Get("responseResponder").(application.Responder)
+	responseResponder := c.Get("responseResponder").(config.Responder)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -43,12 +44,12 @@ func (p *Posts) FindOne(c echo.Context) error {
 		return err
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responseResponder").(config.Responder)
 	return responder.Respond(c, http.StatusOK, post)
 }
 
 func (p *Posts) Save(c echo.Context) error {
-	postDto := new(dto.PostDto)
+	postDto := new(dto2.PostDto)
 
 	if err := c.Bind(postDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -58,7 +59,7 @@ func (p *Posts) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	securityContext := c.(*application.SecurityContext)
+	securityContext := c.(*config.SecurityContext)
 
 	post := &entity.Post{
 		Title: postDto.Title,
@@ -71,7 +72,7 @@ func (p *Posts) Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responseResponder").(config.Responder)
 
 	return responder.Respond(c, http.StatusCreated, post)
 }
@@ -83,7 +84,7 @@ func (p *Posts) Delete(c echo.Context) error {
 		return err
 	}
 
-	securityContext := c.(*application.SecurityContext)
+	securityContext := c.(*config.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
 	_, err = p.app.FindByIdAndUserId(uint64(postId), userId)
@@ -96,16 +97,16 @@ func (p *Posts) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responseResponder").(config.Responder)
 	return responder.Respond(c, http.StatusNoContent, nil)
 }
 
 func (p *Posts) Update(c echo.Context) error {
 	postId, _ := strconv.Atoi(c.Param("id"))
-	securityContext := c.(*application.SecurityContext)
+	securityContext := c.(*config.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
-	postDto := new(dto.PostDto)
+	postDto := new(dto2.PostDto)
 
 	if err := c.Bind(postDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -131,6 +132,6 @@ func (p *Posts) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	responder := c.Get("responseResponder").(application.Responder)
+	responder := c.Get("responseResponder").(config.Responder)
 	return responder.Respond(c, http.StatusOK, updatedPost)
 }

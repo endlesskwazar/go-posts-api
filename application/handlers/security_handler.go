@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/thanhpk/randstr"
-	"go-cource-api/application"
-	"go-cource-api/domain"
+	config2 "go-cource-api/application/config"
+	dto2 "go-cource-api/application/dto"
+	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
-	"go-cource-api/interfaces/dto"
+	"go-cource-api/infrustructure/security"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 	"io"
@@ -18,17 +19,17 @@ import (
 )
 
 type Security struct {
-	app application.SecurityAppInterface
+	app services.SecurityAppInterface
 }
 
-func NewSecurity(app application.SecurityAppInterface) *Security {
+func NewSecurity(app services.SecurityAppInterface) *Security {
 	return &Security{
 		app: app,
 	}
 }
 
 func (u *Security) Register(c echo.Context) error {
-	registerUserDto := new(dto.RegisterUserDto)
+	registerUserDto := new(dto2.RegisterUserDto)
 
 	if err := c.Bind(registerUserDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -54,7 +55,7 @@ func (u *Security) Register(c echo.Context) error {
 }
 
 func (u *Security) Login(c echo.Context) error {
-	loginUserDto := new(dto.LoginUserDto)
+	loginUserDto := new(dto2.LoginUserDto)
 
 	if err := c.Bind(loginUserDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -70,11 +71,11 @@ func (u *Security) Login(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &domain.Token{Token: *tokenString})
+	return c.JSON(http.StatusOK, &security.Token{Token: *tokenString})
 }
 
 func (u *Security) SocialRedirect(c echo.Context) error {
-	config := c.Get("config").(*application.Config)
+	config := c.Get("config").(*config2.Config)
 	var redirectUrl string
 
 	switch provider := c.Param("provider"); provider {
@@ -95,7 +96,7 @@ func (u *Security) SocialRedirect(c echo.Context) error {
 func (u *Security) SocialLoginSuccess(c echo.Context) error {
 	provider := c.Param("provider")
 	code := c.QueryParam("code")
-	config := c.Get("config").(*application.Config)
+	config := c.Get("config").(*config2.Config)
 
 	var userInfoUrl string
 

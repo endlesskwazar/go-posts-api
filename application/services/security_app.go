@@ -1,12 +1,12 @@
-package application
+package services
 
 import (
 	"go-cource-api/domain/entity"
-	"go-cource-api/infrustructure"
+	security2 "go-cource-api/infrustructure/security"
 )
 
 type securityApp struct {
-	security infrustructure.Security
+	security security2.Security
 }
 
 var _ SecurityAppInterface = &securityApp{}

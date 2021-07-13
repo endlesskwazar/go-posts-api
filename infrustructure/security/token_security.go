@@ -1,8 +1,8 @@
-package domain
+package security
 
 import "go-cource-api/domain/entity"
 
-type Security interface {
+type TokenSecurity interface {
 	HashPassword(string) ([]byte, error)
 	LoginUser(string, string) (*string, error)
 	RegisterUser(user *entity.User) error
@@ -10,4 +10,3 @@ type Security interface {
 	VerifyPassword(string, string) error
 	GenerateToken(entity.User) (*string, error)
 }
-

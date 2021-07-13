@@ -25,7 +25,6 @@ docker-compose exec go go test -v go-cource-api/interfaces/handlers
 # TODO
 
 - [ ] Fix docker development setup clashing with local go
-- [ ] Figure out how to not use magic number for authenticated user in tests for id. And not to duplicate local const in every test
 - [ ] Fix database migrations on every test(Migrate once and rollback inserted data after each test)
 - [ ] Implement Twitter oauth(waiting for dev acc app verification)
 - [ ] Implement Own errors with extended information. Implement Own error handler
@@ -34,5 +33,5 @@ docker-compose exec go go test -v go-cource-api/interfaces/handlers
 - [ ] Make modular routing
 - [x] Add content negotiation
 - [ ] Add CI Dron tests pipeline
-- [ ] Protect comment form non owner delete
+- [x] Protect comment form non owner delete
 - [ ] Extract test database config to envs

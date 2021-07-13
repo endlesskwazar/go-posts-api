@@ -2,13 +2,13 @@ package middlewares
 
 import (
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application"
+	"go-cource-api/application/config"
 )
 
-func ResponderInjectorMiddleware(responseResponder *application.ResponseResponder) echo.MiddlewareFunc {
+func ConfigInjectorMiddleware(config *config.Config) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("responseResponder", responseResponder)
+			c.Set("config", config)
 			return next(c)
 		}
 	}

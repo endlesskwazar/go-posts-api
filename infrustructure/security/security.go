@@ -1,10 +1,9 @@
-package infrustructure
+package security
 
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
-	"go-cource-api/domain"
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -13,17 +12,17 @@ import (
 	"time"
 )
 
-type Security struct {
+type JwtSecurity struct {
 	userRepo repository.UserRepository
 }
 
-func NewSecurity(userRepo repository.UserRepository) *Security {
-	return &Security{userRepo}
+func NewSecurity(userRepo repository.UserRepository) *JwtSecurity {
+	return &JwtSecurity{userRepo}
 }
 
-var _ domain.Security = &Security{}
+var _ TokenSecurity = &JwtSecurity{}
 
-func (s *Security) IsUserExists(email string) bool {
+func (s *JwtSecurity) IsUserExists(email string) bool {
 	_, err := s.userRepo.FindByEmail(email)
 
 	if err != nil {
@@ -35,7 +34,7 @@ func (s *Security) IsUserExists(email string) bool {
 	return true
 }
 
-func (s *Security) RegisterUser(user *entity.User) error {
+func (s *JwtSecurity) RegisterUser(user *entity.User) error {
 	hashedPassword, _ := s.HashPassword(user.Password)
 	user.Password = string(hashedPassword)
 
@@ -46,11 +45,11 @@ func (s *Security) RegisterUser(user *entity.User) error {
 	return nil
 }
 
-func (s *Security) HashPassword(password string) ([]byte, error) {
+func (s *JwtSecurity) HashPassword(password string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }
 
-func (s *Security) LoginUser(email string, password string) (*string, error) {
+func (s *JwtSecurity) LoginUser(email string, password string) (*string, error) {
 	user, err := s.userRepo.FindByEmail(email)
 
 	if err != nil {
@@ -66,12 +65,12 @@ func (s *Security) LoginUser(email string, password string) (*string, error) {
 	return s.GenerateToken(*user)
 }
 
-func (s *Security) VerifyPassword(plain string, hash string) error {
+func (s *JwtSecurity) VerifyPassword(plain string, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain))
 }
 
-func (s *Security) GenerateToken(user entity.User) (*string, error) {
-	claims := &domain.JwtCustomClaims{
+func (s *JwtSecurity) GenerateToken(user entity.User) (*string, error) {
+	claims := &JwtCustomClaims{
 		Id:    user.Id,
 		Email: user.Email,
 		StandardClaims: jwt.StandardClaims{
@@ -90,6 +89,6 @@ func (s *Security) GenerateToken(user entity.User) (*string, error) {
 	return &tokenString, nil
 }
 
-func (s *Security) FindUserByEmail(email string) (*entity.User, error) {
+func (s *JwtSecurity) FindUserByEmail(email string) (*entity.User, error) {
 	return s.userRepo.FindByEmail(email)
 }

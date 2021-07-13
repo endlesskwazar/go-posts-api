@@ -4,19 +4,17 @@ import (
 	unsecureJWT "github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application"
-	"go-cource-api/domain"
-	"go-cource-api/interfaces"
-	"go-cource-api/interfaces/validation"
+	"go-cource-api/application/config"
+	"go-cource-api/infrustructure/security"
 	"net/http"
 )
 
 func BuildApp() *echo.Echo {
 	app := echo.New()
-	app.Validator = &validation.CustomValidator{
+	app.Validator = &config.CustomValidator{
 		Validator: validator.New(),
 	}
-	app.Renderer = interfaces.Renderer()
+	app.Renderer = config.Renderer()
 
 	return app
 }
@@ -24,11 +22,11 @@ func BuildApp() *echo.Echo {
 func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.Context {
 	context := app.NewContext(r, w)
 
-	cc := application.SecurityContext{
+	cc := config.SecurityContext{
 		Context: context,
 	}
 
-	claims := &domain.JwtCustomClaims{
+	claims := &security.JwtCustomClaims{
 		Id: 1,
 		Email: "test@mail.com",
 	}
@@ -38,7 +36,7 @@ func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.C
 	}
 
 	context.Set("user", user)
-	context.Set("responseResponder", application.NewResponseResponder())
+	context.Set("responseResponder", config.NewResponseResponder())
 
 	return &cc
 }

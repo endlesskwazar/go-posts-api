@@ -3,17 +3,15 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"go-cource-api/application"
-	"go-cource-api/infrustructure"
+	config2 "go-cource-api/application/config"
+	handlers2 "go-cource-api/application/handlers"
+	middlewares2 "go-cource-api/application/middlewares"
 	"go-cource-api/infrustructure/persistence"
-	"go-cource-api/interfaces"
-	"go-cource-api/interfaces/handlers"
-	"go-cource-api/interfaces/middlewares"
-	"go-cource-api/interfaces/validation"
+	security2 "go-cource-api/infrustructure/security"
 )
 
 func main() {
-	config := application.NewConfig()
+	config := config2.NewConfig()
 
 	services, err := persistence.NewRepositories(
 		config.DatabaseConfig.User,
@@ -31,23 +29,23 @@ func main() {
 		panic(err)
 	}
 
-	posts := handlers.NewPosts(services.Post)
-	comments := handlers.NewComments(services.Comment)
-	security := handlers.NewSecurity(infrustructure.NewSecurity(services.User))
+	posts := handlers2.NewPosts(services.Post)
+	comments := handlers2.NewComments(services.Comment)
+	security := handlers2.NewSecurity(security2.NewSecurity(services.User))
 
-	responseResponder := application.NewResponseResponder()
+	responseResponder := config2.NewResponseResponder()
 
 	e := echo.New()
-	e.Use(middlewares.ConfigInjectorMiddleware(config))
-	e.Use(middlewares.ResponderInjectorMiddleware(responseResponder))
-	e.Validator = &validation.CustomValidator{
+	e.Use(middlewares2.ConfigInjectorMiddleware(config))
+	e.Use(middlewares2.ResponderInjectorMiddleware(responseResponder))
+	e.Validator = &config2.CustomValidator{
 		Validator: validator.New(),
 	}
-	e.Renderer = interfaces.Renderer()
+	e.Renderer = config2.Renderer()
 	apiV1 := e.Group("/api/v1")
-	apiV1.Use(middlewares.SecurityContextMiddleware)
+	apiV1.Use(middlewares2.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")
-	restrictedApiV1.Use(middlewares.AuthMiddleware())
+	restrictedApiV1.Use(middlewares2.AuthMiddleware())
 
 	// Auth
 	e.GET("/login", security.UiLogin)

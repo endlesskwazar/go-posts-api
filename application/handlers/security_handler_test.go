@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	mock "go-cource-api/interfaces/_mocks"
-	"go-cource-api/interfaces/dto"
+	mock2 "go-cource-api/application/_mocks"
+	dto2 "go-cource-api/application/dto"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,14 +15,14 @@ import (
 
 func TestRegister_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock2.NewMockSecurityAppInterface(ctrl)
 	securityMock.EXPECT().RegisterUser(gomock.Any())
 
 	securityHandlers := NewSecurity(securityMock)
 
 	e := BuildApp()
 
-	registerDto := &dto.RegisterUserDto{
+	registerDto := &dto2.RegisterUserDto{
 		Name: "test",
 		Email: "test@mail.com",
 		Password: "supersecret",
@@ -42,10 +42,10 @@ func TestRegister_Success(t *testing.T) {
 
 func TestLogin_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock2.NewMockSecurityAppInterface(ctrl)
 	mockedToken := "2348962u3ighbj542j34l"
 
-	loginUserDto := &dto.LoginUserDto{
+	loginUserDto := &dto2.LoginUserDto{
 		Email: "test@mail.com",
 		Password: "supersecret",
 	}
@@ -71,7 +71,7 @@ func TestLogin_Success(t *testing.T) {
 func TestUiLogin_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock2.NewMockSecurityAppInterface(ctrl)
 	securityHandlers := NewSecurity(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
@@ -87,7 +87,7 @@ func TestUiLogin_Success(t *testing.T) {
 func TestUiRegister_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock2.NewMockSecurityAppInterface(ctrl)
 	securityHandlers := NewSecurity(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
