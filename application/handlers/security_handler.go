@@ -18,17 +18,17 @@ import (
 	"net/http"
 )
 
-type Security struct {
-	app services.SecurityAppInterface
+type SecurityHandlers struct {
+	service services.SecurityService
 }
 
-func NewSecurity(app services.SecurityAppInterface) *Security {
-	return &Security{
-		app: app,
+func NewSecurity(service services.SecurityService) *SecurityHandlers {
+	return &SecurityHandlers{
+		service: service,
 	}
 }
 
-func (u *Security) Register(c echo.Context) error {
+func (h *SecurityHandlers) Register(c echo.Context) error {
 	registerUserDto := new(dto.RegisterUserDto)
 
 	if err := c.Bind(registerUserDto); err != nil {
@@ -45,7 +45,7 @@ func (u *Security) Register(c echo.Context) error {
 		Password: registerUserDto.Password,
 	}
 
-	err := u.app.RegisterUser(user)
+	err := h.service.RegisterUser(user)
 
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (u *Security) Register(c echo.Context) error {
 	return c.JSON(http.StatusNoContent, nil)
 }
 
-func (u *Security) Login(c echo.Context) error {
+func (h *SecurityHandlers) Login(c echo.Context) error {
 	loginUserDto := new(dto.LoginUserDto)
 
 	if err := c.Bind(loginUserDto); err != nil {
@@ -65,7 +65,7 @@ func (u *Security) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	tokenString, err := u.app.LoginUser(loginUserDto.Email, loginUserDto.Password)
+	tokenString, err := h.service.LoginUser(loginUserDto.Email, loginUserDto.Password)
 
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (u *Security) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, &security.Token{Token: *tokenString})
 }
 
-func (u *Security) SocialRedirect(c echo.Context) error {
+func (h *SecurityHandlers) SocialRedirect(c echo.Context) error {
 	appConfig := c.Get("config").(*config.Config)
 	var redirectUrl string
 
@@ -93,7 +93,7 @@ func (u *Security) SocialRedirect(c echo.Context) error {
 	return c.String(200, "qweqwe")
 }
 
-func (u *Security) SocialLoginSuccess(c echo.Context) error {
+func (h *SecurityHandlers) SocialLoginSuccess(c echo.Context) error {
 	provider := c.Param("provider")
 	code := c.QueryParam("code")
 	appConfig := c.Get("config").(*config.Config)
@@ -128,7 +128,7 @@ func (u *Security) SocialLoginSuccess(c echo.Context) error {
 		return err
 	}
 
-	user, err := u.app.FindUserByEmail(result["email"].(string))
+	user, err := h.service.FindUserByEmail(result["email"].(string))
 
 	if err != nil {
 		println(err.Error())
@@ -142,14 +142,14 @@ func (u *Security) SocialLoginSuccess(c echo.Context) error {
 			Password: randstr.Hex(16),
 		}
 
-		err := u.app.RegisterUser(user)
+		err := h.service.RegisterUser(user)
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 	}
 
-	token, err := u.app.GenerateToken(*user)
+	token, err := h.service.GenerateToken(*user)
 
 	if err != nil {
 		return err
@@ -184,10 +184,10 @@ func getUserInfo(userDetailsUrl string) ([]byte, error) {
 	return contents, nil
 }
 
-func (u *Security) UiLogin(c echo.Context) error {
+func (h *SecurityHandlers) UiLogin(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.html", map[string]interface{}{})
 }
 
-func (u *Security) UiRegister(c echo.Context) error {
+func (h *SecurityHandlers) UiRegister(c echo.Context) error {
 	return c.Render(http.StatusOK, "register.html", map[string]interface{}{})
 }

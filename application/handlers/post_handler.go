@@ -10,18 +10,18 @@ import (
 	"strconv"
 )
 
-type Posts struct {
-	app services.PostAppInterface
+type PostHandlers struct {
+	service services.PostService
 }
 
-func NewPosts(app services.PostAppInterface) *Posts {
-	return &Posts{
-		app: app,
+func NewPostHandlers(service services.PostService) *PostHandlers {
+	return &PostHandlers{
+		service: service,
 	}
 }
 
-func (p *Posts) List(c echo.Context) error {
-	posts, err := p.app.FindAll()
+func (h *PostHandlers) List(c echo.Context) error {
+	posts, err := h.service.FindAll()
 	responseResponder := c.Get("responder").(application.Responder)
 
 	if err != nil {
@@ -31,14 +31,14 @@ func (p *Posts) List(c echo.Context) error {
 	return responseResponder.Respond(c, http.StatusOK, posts)
 }
 
-func (p *Posts) FindOne(c echo.Context) error {
+func (h *PostHandlers) FindOne(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		return err
 	}
 
-	post, err := p.app.FindById(uint64(id))
+	post, err := h.service.FindById(uint64(id))
 
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (p *Posts) FindOne(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, post)
 }
 
-func (p *Posts) Save(c echo.Context) error {
+func (h *PostHandlers) Save(c echo.Context) error {
 	postDto := new(dto.PostDto)
 
 	if err := c.Bind(postDto); err != nil {
@@ -67,7 +67,7 @@ func (p *Posts) Save(c echo.Context) error {
 		UserId: securityContext.UserClaims().Id,
 	}
 
-	_, err := p.app.Save(post)
+	_, err := h.service.Save(post)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -77,7 +77,7 @@ func (p *Posts) Save(c echo.Context) error {
 	return responder.Respond(c, http.StatusCreated, post)
 }
 
-func (p *Posts) Delete(c echo.Context) error {
+func (h *PostHandlers) Delete(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
@@ -87,13 +87,13 @@ func (p *Posts) Delete(c echo.Context) error {
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
-	_, err = p.app.FindByIdAndUserId(uint64(postId), userId)
+	_, err = h.service.FindByIdAndUserId(uint64(postId), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
 	}
 
-	if err = p.app.Delete(uint64(postId)); err != nil {
+	if err = h.service.Delete(uint64(postId)); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
@@ -101,7 +101,7 @@ func (p *Posts) Delete(c echo.Context) error {
 	return responder.Respond(c, http.StatusNoContent, nil)
 }
 
-func (p *Posts) Update(c echo.Context) error {
+func (h *PostHandlers) Update(c echo.Context) error {
 	postId, _ := strconv.Atoi(c.Param("id"))
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
@@ -116,7 +116,7 @@ func (p *Posts) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	_, err := p.app.FindByIdAndUserId(uint64(postId), userId)
+	_, err := h.service.FindByIdAndUserId(uint64(postId), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
@@ -128,7 +128,7 @@ func (p *Posts) Update(c echo.Context) error {
 		Body: postDto.Body,
 	}
 
-	if err = p.app.Update(updatedPost); err != nil {
+	if err = h.service.Update(updatedPost); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 

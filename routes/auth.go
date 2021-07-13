@@ -5,7 +5,7 @@ import (
 	"go-cource-api/application/handlers"
 )
 
-func InitAuthRoutes(e *echo.Echo, handlers *handlers.Security) {
+func InitAuthRoutes(e *echo.Echo, handlers *handlers.SecurityHandlers) {
 	e.GET("/login", handlers.UiLogin)
 	e.GET("/register", handlers.UiRegister)
 	e.GET("/auth/social/:provider", handlers.SocialRedirect)

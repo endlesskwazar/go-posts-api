@@ -17,7 +17,7 @@ func TestListPost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepoMock := mock.NewMockPostRepository(ctrl)
 	postRepoMock.EXPECT().FindAll()
-	postHandlers := NewPosts(postRepoMock)
+	postHandlers := NewPostHandlers(postRepoMock)
 
 	e := BuildApp()
 
@@ -39,7 +39,7 @@ func TestListPost_Success(t *testing.T) {
 func TestLFindOnePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepoMock := mock.NewMockPostRepository(ctrl)
-	postHandlers := NewPosts(postRepoMock)
+	postHandlers := NewPostHandlers(postRepoMock)
 	postIdStr := "1"
 	postIdInt := uint64(1)
 
@@ -68,7 +68,7 @@ func TestSavePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
 	postRepo.EXPECT().Save(gomock.Any())
-	postHandlers := NewPosts(postRepo)
+	postHandlers := NewPostHandlers(postRepo)
 
 	postDto := &dto.PostDto{
 		Title: "test",
@@ -92,7 +92,7 @@ func TestSavePost_Success(t *testing.T) {
 func TestDeletePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
-	postHandlers := NewPosts(postRepo)
+	postHandlers := NewPostHandlers(postRepo)
 	idToDelete := uint64(1)
 	standardUserId := uint64(1)
 
@@ -123,7 +123,7 @@ func TestDeletePost_Success(t *testing.T) {
 func TestUpdatePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
-	postHandlers := NewPosts(postRepo)
+	postHandlers := NewPostHandlers(postRepo)
 	standardUserId := uint64(1)
 	postIdToUpdate := uint64(1)
 

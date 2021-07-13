@@ -10,24 +10,24 @@ import (
 	"strconv"
 )
 
-type Comments struct {
-	app services.CommentAppInterface
+type CommentHandlers struct {
+	service services.CommentService
 }
 
-func NewComments(app services.CommentAppInterface) *Comments {
-	return &Comments{
-		app: app,
+func NewCommentHandlers(service services.CommentService) *CommentHandlers {
+	return &CommentHandlers{
+		service: service,
 	}
 }
 
-func (p *Comments) FindByPostId(c echo.Context) error {
+func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("postId"))
 
 	if err != nil {
 		return err
 	}
 
-	comments, err := p.app.FindByPostId(uint64(postId))
+	comments, err := h.service.FindByPostId(uint64(postId))
 
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (p *Comments) FindByPostId(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, comments)
 }
 
-func (p *Comments) Save(c echo.Context) error {
+func (h *CommentHandlers) Save(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
 
 	if err := c.Bind(commentDto); err != nil {
@@ -62,7 +62,7 @@ func (p *Comments) Save(c echo.Context) error {
 		UserId: securityContext.UserClaims().Id,
 	}
 
-	_, err = p.app.Save(comment)
+	_, err = h.service.Save(comment)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -71,7 +71,7 @@ func (p *Comments) Save(c echo.Context) error {
 	return responder.Respond(c, http.StatusCreated, comment)
 }
 
-func (p *Comments) Update(c echo.Context) error {
+func (h *CommentHandlers) Update(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
 
 	if err := c.Bind(commentDto); err != nil {
@@ -88,7 +88,7 @@ func (p *Comments) Update(c echo.Context) error {
 		return err
 	}
 
-	comment, err := p.app.FindById(uint64(id))
+	comment, err := h.service.FindById(uint64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
@@ -102,7 +102,7 @@ func (p *Comments) Update(c echo.Context) error {
 
 	comment.Body = commentDto.Body
 
-	if err = p.app.Update(comment); err != nil {
+	if err = h.service.Update(comment); err != nil {
 		return err
 	}
 
@@ -110,7 +110,7 @@ func (p *Comments) Update(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, comment)
 }
 
-func (p *Comments) Delete(c echo.Context) error {
+func (h *CommentHandlers) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	securityContext := c.(*application.SecurityContext)
 
@@ -118,7 +118,7 @@ func (p *Comments) Delete(c echo.Context) error {
 		return err
 	}
 
-	comment, err := p.app.FindById(uint64(id))
+	comment, err := h.service.FindById(uint64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
@@ -128,7 +128,7 @@ func (p *Comments) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusForbidden, "You can't perform operation")
 	}
 
-	if err = p.app.Delete(uint64(id)); err != nil {
+	if err = h.service.Delete(uint64(id)); err != nil {
 		return err
 	}
 

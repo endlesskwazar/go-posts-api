@@ -15,7 +15,7 @@ import (
 func main() {
 	appConfig := config.NewConfig()
 
-	services, err := persistence.NewRepositories(
+	repositories, err := persistence.NewRepositories(
 		appConfig.DatabaseConfig.User,
 		appConfig.DatabaseConfig.Password,
 		appConfig.DatabaseConfig.Port,
@@ -27,13 +27,13 @@ func main() {
 		panic(err)
 	}
 
-	if err = services.Automigrate(); err != nil {
+	if err = repositories.Automigrate(); err != nil {
 		panic(err)
 	}
 
-	postHandlers := handlers.NewPosts(services.Post)
-	commentHandlers := handlers.NewComments(services.Comment)
-	securityHandlers := handlers.NewSecurity(security.NewSecurity(services.User))
+	postHandlers := handlers.NewPostHandlers(repositories.Post)
+	commentHandlers := handlers.NewCommentHandlers(repositories.Comment)
+	securityHandlers := handlers.NewSecurity(security.NewSecurity(repositories.User))
 
 	responseResponder := application.NewResponseResponder()
 

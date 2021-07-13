@@ -6,7 +6,7 @@ import (
 	"go-cource-api/application/middlewares"
 )
 
-func InitApiV1Routes(e *echo.Echo, postsHandlers *handlers.Posts, commentHandlers *handlers.Comments) {
+func InitApiV1Routes(e *echo.Echo, postsHandlers *handlers.PostHandlers, commentHandlers *handlers.Comments) {
 	apiV1 := e.Group("/api/v1")
 	apiV1.Use(middlewares.SecurityContextMiddleware)
 	restrictedApiV1 := apiV1.Group("")
