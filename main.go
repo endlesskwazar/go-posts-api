@@ -3,10 +3,12 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/swaggo/echo-swagger"
 	"go-cource-api/application"
 	"go-cource-api/application/config"
 	"go-cource-api/application/handlers"
 	"go-cource-api/application/middlewares"
+	_ "go-cource-api/docs"
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/security"
 	"go-cource-api/routes"
@@ -35,15 +37,16 @@ func main() {
 	commentHandlers := handlers.NewCommentHandlers(repositories.Comment)
 	securityHandlers := handlers.NewSecurity(security.NewSecurity(repositories.User))
 
-	responseResponder := application.NewResponseResponder()
+	responder := application.NewResponseResponder()
 
 	e := echo.New()
 	e.Use(middlewares.ConfigInjectorMiddleware(appConfig))
-	e.Use(middlewares.ResponderInjectorMiddleware(responseResponder))
+	e.Use(middlewares.ResponderInjectorMiddleware(responder))
 	e.Validator = &application.CustomValidator{
 		Validator: validator.New(),
 	}
 	e.Renderer = application.Renderer()
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	routes.InitAuthRoutes(e, securityHandlers)
 	routes.InitApiV1Routes(e, postHandlers, commentHandlers)

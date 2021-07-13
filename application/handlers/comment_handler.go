@@ -20,6 +20,14 @@ func NewCommentHandlers(service services.CommentService) *CommentHandlers {
 	}
 }
 
+// FindByPostId godoc
+// @Summary Returns all comments to post
+// @Description Returns all comments to post
+// @ID get-string-by-int
+// @Produce xml
+// @Param id path int true "Post id"
+// @Success 200 {object} entity.Comment
+// @Router /api/v1/posts/{postId}/comments [get]
 func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("postId"))
 
@@ -37,6 +45,15 @@ func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, comments)
 }
 
+// Save godoc
+// @Summary Creates comment for post
+// @Description Creates comment for post
+// @ID get-string-by-int
+// @Accept  xml
+// @Produce  xml
+// @Param postId path int true "Post id"
+// @Success 201 {object} entity.Comment
+// @Router /api/v1/posts/{postId}/comments [post]
 func (h *CommentHandlers) Save(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
 

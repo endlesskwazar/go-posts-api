@@ -1,0 +1,57 @@
+definitions:
+  entity.Comment:
+    properties:
+      body:
+        type: string
+      createAt:
+        type: string
+      id:
+        type: integer
+      postId:
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/posts/{postId}/comments:
+    get:
+      description: Returns all comments to post
+      operationId: get-string-by-int
+      parameters:
+      - description: Post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Comment'
+      summary: Returns all comments to post
+    post:
+      consumes:
+      - text/xml
+      description: Creates comment for post
+      operationId: get-string-by-int
+      parameters:
+      - description: Post id
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - text/xml
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Comment'
+      summary: Creates comment for post
+swagger: "2.0"
