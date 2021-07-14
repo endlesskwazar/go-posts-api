@@ -20,6 +20,13 @@ func NewPostHandlers(service services.PostService) *PostHandlers {
 	}
 }
 
+// List godoc
+// @Summary Get all posts
+// @Description Get all posts
+// @Tags Posts
+// @Produce json,xml
+// @Success 200 {array} entity.Post
+// @Router /api/v1/posts [get]
 func (h *PostHandlers) List(c echo.Context) error {
 	posts, err := h.service.FindAll()
 	responseResponder := c.Get("responder").(application.Responder)
@@ -31,6 +38,14 @@ func (h *PostHandlers) List(c echo.Context) error {
 	return responseResponder.Respond(c, http.StatusOK, posts)
 }
 
+// FindOne godoc
+// @Summary Get one post by id
+// @Description Get one post by id
+// @Tags Posts
+// @Produce json,xml
+// @Param id path int true "Post id"
+// @Success 200 {object} entity.Post
+// @Router /api/v1/posts/{id} [get]
 func (h *PostHandlers) FindOne(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -48,6 +63,15 @@ func (h *PostHandlers) FindOne(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, post)
 }
 
+// Save godoc
+// @Summary Create post
+// @Description Create post
+// @Tags Posts
+// @Accept xml,json
+// @Produce  xml,json
+// @Param dto.PostDto body dto.PostDto false "Post data"
+// @Success 201 {object} entity.Comment
+// @Router /api/v1/posts [post]
 func (h *PostHandlers) Save(c echo.Context) error {
 	postDto := new(dto.PostDto)
 
@@ -77,6 +101,13 @@ func (h *PostHandlers) Save(c echo.Context) error {
 	return responder.Respond(c, http.StatusCreated, post)
 }
 
+// Delete godoc
+// @Summary Delete post
+// @Description Delete post
+// @Tags Posts
+// @Param id path int true "Post id"
+// @Success 204
+// @Router /api/v1/posts/{id} [delete]
 func (h *PostHandlers) Delete(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("id"))
 
@@ -101,6 +132,16 @@ func (h *PostHandlers) Delete(c echo.Context) error {
 	return responder.Respond(c, http.StatusNoContent, nil)
 }
 
+// Update godoc
+// @Summary Update post
+// @Description Update post
+// @Tags Posts
+// @Accept xml,json
+// @Produce  xml,json
+// @Param dto.UpdatePostDto body dto.UpdatePostDto false "Post data"
+// @Param id path int true "Post id"
+// @Success 200 {object} entity.Post
+// @Router /api/v1/posts/{id} [put]
 func (h *PostHandlers) Update(c echo.Context) error {
 	postId, _ := strconv.Atoi(c.Param("id"))
 	securityContext := c.(*application.SecurityContext)

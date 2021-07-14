@@ -4,14 +4,144 @@
         "contact": {}
     },
     "paths": {
-        "/api/v1/posts/{postId}/comments": {
-            "get": {
-                "description": "Returns all comments to post",
+        "/api/v1/comments/{id}": {
+            "put": {
+                "description": "Update comment",
+                "consumes": [
+                    "text/xml",
+                    "application/json"
+                ],
                 "produces": [
+                    "application/json",
                     "text/xml"
                 ],
-                "summary": "Returns all comments to post",
-                "operationId": "get-string-by-int",
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Update comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Comment id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Comment data",
+                        "name": "dto.UpdateCommentDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCommentDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Comment"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete comment",
+                "produces": [
+                    "application/json",
+                    "text/xml"
+                ],
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Delete comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Comment id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/posts": {
+            "get": {
+                "description": "Get all posts",
+                "produces": [
+                    "application/json",
+                    "text/xml"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get all posts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Post"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create post",
+                "consumes": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "produces": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create post",
+                "parameters": [
+                    {
+                        "description": "Post data",
+                        "name": "dto.PostDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PostDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Comment"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/{id}": {
+            "get": {
+                "description": "Get one post by id",
+                "produces": [
+                    "application/json",
+                    "text/xml"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get one post by id",
                 "parameters": [
                     {
                         "type": "integer",
@@ -25,21 +155,84 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.Comment"
+                            "$ref": "#/definitions/entity.Post"
                         }
                     }
                 }
             },
-            "post": {
-                "description": "Creates comment for post",
+            "put": {
+                "description": "Update post",
                 "consumes": [
-                    "text/xml"
+                    "text/xml",
+                    "application/json"
                 ],
                 "produces": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Update post",
+                "parameters": [
+                    {
+                        "description": "Post data",
+                        "name": "dto.UpdatePostDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePostDto"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Post id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Post"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete post",
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete post",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Post id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/{postId}/comments": {
+            "get": {
+                "description": "Returns all comments to post",
+                "produces": [
+                    "application/json",
                     "text/xml"
                 ],
-                "summary": "Creates comment for post",
-                "operationId": "get-string-by-int",
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Returns all comments to post",
                 "parameters": [
                     {
                         "type": "integer",
@@ -47,6 +240,42 @@
                         "name": "postId",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Comment"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates comment for post",
+                "consumes": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "produces": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Creates comment for post",
+                "parameters": [
+                    {
+                        "description": "Comment data",
+                        "name": "dto.CommentDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CommentDto"
+                        }
                     }
                 ],
                 "responses": {
@@ -58,9 +287,152 @@
                     }
                 }
             }
+        },
+        "/login": {
+            "post": {
+                "description": "Login user",
+                "consumes": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "produces": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Register data",
+                        "name": "dto.LoginUserDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/security.Token"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Register new user",
+                "consumes": [
+                    "text/xml",
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register new user",
+                "parameters": [
+                    {
+                        "description": "Register data",
+                        "name": "dto.RegisterUserDto",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.CommentDto": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginUserDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PostDto": {
+            "type": "object",
+            "required": [
+                "body",
+                "title"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterUserDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateCommentDto": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePostDto": {
+            "type": "object",
+            "required": [
+                "body",
+                "title"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Comment": {
             "type": "object",
             "properties": {
@@ -81,6 +453,37 @@
                 },
                 "userId": {
                     "type": "integer"
+                }
+            }
+        },
+        "entity.Post": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "createAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "security.Token": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
                 }
             }
         }

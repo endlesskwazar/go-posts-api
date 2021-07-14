@@ -23,10 +23,10 @@ func NewCommentHandlers(service services.CommentService) *CommentHandlers {
 // FindByPostId godoc
 // @Summary Returns all comments to post
 // @Description Returns all comments to post
-// @ID get-string-by-int
-// @Produce xml
-// @Param id path int true "Post id"
-// @Success 200 {object} entity.Comment
+// @Tags Posts
+// @Produce json,xml
+// @Param postId path int true "Post id"
+// @Success 200 {array} entity.Comment
 // @Router /api/v1/posts/{postId}/comments [get]
 func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("postId"))
@@ -48,10 +48,10 @@ func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 // Save godoc
 // @Summary Creates comment for post
 // @Description Creates comment for post
-// @ID get-string-by-int
-// @Accept  xml
-// @Produce  xml
-// @Param postId path int true "Post id"
+// @Tags Posts
+// @Accept xml,json
+// @Produce  xml,json
+// @Param dto.CommentDto body dto.CommentDto false "Comment data"
 // @Success 201 {object} entity.Comment
 // @Router /api/v1/posts/{postId}/comments [post]
 func (h *CommentHandlers) Save(c echo.Context) error {
@@ -88,6 +88,16 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 	return responder.Respond(c, http.StatusCreated, comment)
 }
 
+// Update godoc
+// @Summary Update comment
+// @Description Update comment
+// @Tags Comments
+// @Accept xml,json
+// @Produce json,xml
+// @Param id path int true "Comment id"
+// @Param dto.UpdateCommentDto body dto.UpdateCommentDto false "Comment data"
+// @Success 200 {array} entity.Comment
+// @Router /api/v1/comments/{id} [put]
 func (h *CommentHandlers) Update(c echo.Context) error {
 	commentDto := new(dto.CommentDto)
 
@@ -127,6 +137,14 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 	return responder.Respond(c, http.StatusOK, comment)
 }
 
+// Delete godoc
+// @Summary Delete comment
+// @Description Delete comment
+// @Tags Comments
+// @Produce json,xml
+// @Param id path int true "Comment id"
+// @Success 204
+// @Router /api/v1/comments/{id} [delete]
 func (h *CommentHandlers) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	securityContext := c.(*application.SecurityContext)

@@ -1,4 +1,57 @@
 definitions:
+  dto.CommentDto:
+    properties:
+      body:
+        type: string
+    type: object
+  dto.LoginUserDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.PostDto:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    required:
+    - body
+    - title
+    type: object
+  dto.RegisterUserDto:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  dto.UpdateCommentDto:
+    properties:
+      body:
+        type: string
+    type: object
+  dto.UpdatePostDto:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    required:
+    - body
+    - title
+    type: object
   entity.Comment:
     properties:
       body:
@@ -14,13 +67,131 @@ definitions:
       userId:
         type: integer
     type: object
+  entity.Post:
+    properties:
+      body:
+        type: string
+      createAt:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  security.Token:
+    properties:
+      token:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /api/v1/posts/{postId}/comments:
+  /api/v1/comments/{id}:
+    delete:
+      description: Delete comment
+      parameters:
+      - description: Comment id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "204":
+          description: ""
+      summary: Delete comment
+      tags:
+      - Comments
+    put:
+      consumes:
+      - text/xml
+      - application/json
+      description: Update comment
+      parameters:
+      - description: Comment id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment data
+        in: body
+        name: dto.UpdateCommentDto
+        schema:
+          $ref: '#/definitions/dto.UpdateCommentDto'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Comment'
+            type: array
+      summary: Update comment
+      tags:
+      - Comments
+  /api/v1/posts:
     get:
-      description: Returns all comments to post
-      operationId: get-string-by-int
+      description: Get all posts
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Post'
+            type: array
+      summary: Get all posts
+      tags:
+      - Posts
+    post:
+      consumes:
+      - text/xml
+      - application/json
+      description: Create post
+      parameters:
+      - description: Post data
+        in: body
+        name: dto.PostDto
+        schema:
+          $ref: '#/definitions/dto.PostDto'
+      produces:
+      - text/xml
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Comment'
+      summary: Create post
+      tags:
+      - Posts
+  /api/v1/posts/{id}:
+    delete:
+      description: Delete post
+      parameters:
+      - description: Post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: ""
+      summary: Delete post
+      tags:
+      - Posts
+    get:
+      description: Get one post by id
       parameters:
       - description: Post id
         in: path
@@ -28,18 +199,46 @@ paths:
         required: true
         type: integer
       produces:
+      - application/json
       - text/xml
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Comment'
-      summary: Returns all comments to post
-    post:
+            $ref: '#/definitions/entity.Post'
+      summary: Get one post by id
+      tags:
+      - Posts
+    put:
       consumes:
       - text/xml
-      description: Creates comment for post
-      operationId: get-string-by-int
+      - application/json
+      description: Update post
+      parameters:
+      - description: Post data
+        in: body
+        name: dto.UpdatePostDto
+        schema:
+          $ref: '#/definitions/dto.UpdatePostDto'
+      - description: Post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/xml
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Post'
+      summary: Update post
+      tags:
+      - Posts
+  /api/v1/posts/{postId}/comments:
+    get:
+      description: Returns all comments to post
       parameters:
       - description: Post id
         in: path
@@ -47,11 +246,79 @@ paths:
         required: true
         type: integer
       produces:
+      - application/json
       - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Comment'
+            type: array
+      summary: Returns all comments to post
+      tags:
+      - Posts
+    post:
+      consumes:
+      - text/xml
+      - application/json
+      description: Creates comment for post
+      parameters:
+      - description: Comment data
+        in: body
+        name: dto.CommentDto
+        schema:
+          $ref: '#/definitions/dto.CommentDto'
+      produces:
+      - text/xml
+      - application/json
       responses:
         "201":
           description: Created
           schema:
             $ref: '#/definitions/entity.Comment'
       summary: Creates comment for post
+      tags:
+      - Posts
+  /login:
+    post:
+      consumes:
+      - text/xml
+      - application/json
+      description: Login user
+      parameters:
+      - description: Register data
+        in: body
+        name: dto.LoginUserDto
+        schema:
+          $ref: '#/definitions/dto.LoginUserDto'
+      produces:
+      - text/xml
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/security.Token'
+      summary: Login user
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - text/xml
+      - application/json
+      description: Register new user
+      parameters:
+      - description: Register data
+        in: body
+        name: dto.RegisterUserDto
+        schema:
+          $ref: '#/definitions/dto.RegisterUserDto'
+      responses:
+        "204":
+          description: ""
+      summary: Register new user
+      tags:
+      - Auth
 swagger: "2.0"

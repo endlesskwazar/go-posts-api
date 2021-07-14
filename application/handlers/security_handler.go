@@ -28,6 +28,15 @@ func NewSecurity(service services.SecurityService) *SecurityHandlers {
 	}
 }
 
+
+// Register godoc
+// @Summary Register new user
+// @Description Register new user
+// @Tags Auth
+// @Accept xml,json
+// @Param dto.RegisterUserDto body dto.RegisterUserDto false "Register data"
+// @Success 204
+// @Router /register [post]
 func (h *SecurityHandlers) Register(c echo.Context) error {
 	registerUserDto := new(dto.RegisterUserDto)
 
@@ -51,9 +60,18 @@ func (h *SecurityHandlers) Register(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login user
+// @Tags Auth
+// @Accept xml,json
+// @Produce xml,json
+// @Param dto.LoginUserDto body dto.LoginUserDto false "Register data"
+// @Success 200 {object} security.Token
+// @Router /login [post]
 func (h *SecurityHandlers) Login(c echo.Context) error {
 	loginUserDto := new(dto.LoginUserDto)
 
