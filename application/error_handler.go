@@ -1,8 +1,6 @@
 package application
 
 import (
-	"fmt"
-	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application/config"
 	"net/http"
@@ -10,7 +8,7 @@ import (
 
 func ErrorHandler(err error, c echo.Context) {
 	report, ok := err.(*echo.HTTPError)
-	appConfig := c.Get("config").(config.Config)
+	appConfig := c.Get("config").(*config.Config)
 
 	var serverErrorMessage string
 
@@ -22,21 +20,6 @@ func ErrorHandler(err error, c echo.Context) {
 
 	if !ok {
 		report = echo.NewHTTPError(http.StatusInternalServerError, serverErrorMessage)
-	}
-
-	if castedObject, ok := err.(validator.ValidationErrors); ok {
-		for _, err := range castedObject {
-			switch err.Tag() {
-			case "required":
-				report.Message = fmt.Sprintf("%s is required",
-					err.Field())
-			case "email":
-				report.Message = fmt.Sprintf("%s is not valid email",
-					err.Field())
-			}
-
-			break
-		}
 	}
 
 	c.Logger().Error(report)

@@ -108,8 +108,8 @@ func (h *SecurityHandlers) SocialRedirect(c echo.Context) error {
 		return err
 	}
 
-	// TODO: return error
-	return c.String(200, "qweqwe")
+
+	return echo.NewHTTPError(http.StatusInternalServerError, "Social auth error")
 }
 
 func (h *SecurityHandlers) SocialLoginSuccess(c echo.Context) error {

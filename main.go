@@ -56,6 +56,7 @@ func main() {
 	e.Validator = &application.CustomValidator{
 		Validator: validator.New(),
 	}
+	e.HTTPErrorHandler = application.ErrorHandler
 	e.Renderer = application.Renderer()
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
