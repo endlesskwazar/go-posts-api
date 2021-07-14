@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	mock "go-cource-api/application/_mocks"
-	dto "go-cource-api/application/dto"
+	"go-cource-api/application/dto"
 	"net/http"
 	"net/http/httptest"
 	"testing"

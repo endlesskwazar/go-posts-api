@@ -17,7 +17,7 @@ func NewUserRepository(db *gorm.DB) *UserRepo {
 
 var _ repository.UserRepository = &UserRepo{}
 
-func (u *UserRepo) FindById(id uint64) (*entity.User, error) {
+func (u *UserRepo) FindById(id int64) (*entity.User, error) {
 	var user entity.User
 
 	if err := u.db.Where("id = ?", id).Take(&user).Error; err != nil {

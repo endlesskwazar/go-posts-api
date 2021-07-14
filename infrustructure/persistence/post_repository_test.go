@@ -3,6 +3,7 @@ package persistence
 import (
 	"github.com/stretchr/testify/assert"
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"testing"
 )
 
@@ -11,9 +12,9 @@ func TestSavePost_Success(t *testing.T) {
 	testUser := SeedUser(conn)
 
 	var post = entity.Post{
-		Title: "test title",
-		Body: "test body",
-		UserId: testUser.Id,
+		Title: null.StringFrom("test title"),
+		Body: null.StringFrom("test body"),
+		UserId: null.IntFrom(testUser.Id),
 	}
 
 	repo := NewPostRepository(conn)
@@ -22,7 +23,7 @@ func TestSavePost_Success(t *testing.T) {
 	assert.Nil(t, saveErr)
 	assert.EqualValues(t, saved.Title, post.Title)
 	assert.EqualValues(t, saved.Body, post.Body)
-	assert.EqualValues(t, saved.UserId, testUser.Id)
+	assert.EqualValues(t, saved.UserId.Int64, testUser.Id)
 }
 
 func TestSavePost_Failure(t *testing.T) {
@@ -54,8 +55,8 @@ func TestUpdatePost_Success(t *testing.T) {
 
 	updatedPost := &entity.Post{
 		Id: post.Id,
-		Title: "Updated",
-		Body: "Updated",
+		Title: null.StringFrom("Updated"),
+		Body: null.StringFrom("Updated"),
 	}
 
 	err := repo.Update(updatedPost)
@@ -87,7 +88,7 @@ func TestFindByIdPost_Failure(t *testing.T) {
 	conn := DBConn()
 	repo := NewPostRepository(conn)
 
-	notFoundId := uint64(1)
+	notFoundId := int64(1)
 
 	_, err := repo.FindById(notFoundId)
 	assert.NotNil(t, err)
@@ -98,7 +99,7 @@ func TestFindByIdAndUserIdPost_Success(t *testing.T) {
 	post := SeedPost(conn)
 	repo := NewPostRepository(conn)
 
-	foundedPost, err := repo.FindByIdAndUserId(post.Id, post.UserId)
+	foundedPost, err := repo.FindByIdAndUserId(post.Id, post.UserId.Int64)
 	assert.Nil(t, err)
 	assert.NotNil(t, foundedPost)
 	assert.EqualValues(t, post.Id, foundedPost.Id)

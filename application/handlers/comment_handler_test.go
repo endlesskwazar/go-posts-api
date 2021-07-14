@@ -9,6 +9,7 @@ import (
 	mock "go-cource-api/application/_mocks"
 	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -72,7 +73,7 @@ func TestUpdateComment_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	commentRepo := mock.NewMockCommentRepository(ctrl)
 
-	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: uint64(1)}, nil)
+	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
 	commentRepo.EXPECT().Update(gomock.Any())
 
 	commentHandlers := NewCommentHandlers(commentRepo)
@@ -105,7 +106,7 @@ func TestDeleteComment_Success(t *testing.T) {
 	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewCommentHandlers(commentRepo)
 
-	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: uint64(1)}, nil)
+	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
 	commentRepo.EXPECT().Delete(uint64(1))
 
 	e := BuildApp()

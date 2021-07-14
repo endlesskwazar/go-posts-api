@@ -4,10 +4,10 @@ import "go-cource-api/domain/entity"
 
 type CommentRepository interface {
 	Save(comment *entity.Comment) (*entity.Comment, error)
-	FindByPostId(uint642 uint64) ([]entity.Comment, error)
-	FindById(uint64) (*entity.Comment, error)
+	FindByPostId(id int64) ([]entity.Comment, error)
+	FindById(id int64) (*entity.Comment, error)
 	FindAll() ([]entity.Comment, error)
-	Delete(uint64) error
+	Delete(int64) error
 	Update(*entity.Comment) error
 }
 

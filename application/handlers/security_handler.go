@@ -12,6 +12,7 @@ import (
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/security"
 	"golang.org/x/oauth2"
+	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 	"io"
 	"io/ioutil"
@@ -49,9 +50,9 @@ func (h *SecurityHandlers) Register(c echo.Context) error {
 	}
 
 	user := &entity.User{
-		Name:     registerUserDto.Name,
-		Email:    registerUserDto.Email,
-		Password: registerUserDto.Password,
+		Name:     null.StringFrom(registerUserDto.Name),
+		Email:    null.StringFrom(registerUserDto.Email),
+		Password: null.StringFrom(registerUserDto.Password),
 	}
 
 	err := h.service.RegisterUser(user)
@@ -155,9 +156,9 @@ func (h *SecurityHandlers) SocialLoginSuccess(c echo.Context) error {
 	// No user in Db -> create
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		user = &entity.User{
-			Email:    result["email"].(string),
-			Name:     result["name"].(string),
-			Password: randstr.Hex(16),
+			Email:    null.StringFrom(result["email"].(string)),
+			Name:     null.StringFrom(result["name"].(string)),
+			Password: null.StringFrom(randstr.Hex(16)),
 		}
 
 		err := h.service.RegisterUser(user)

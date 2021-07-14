@@ -6,6 +6,7 @@ import (
 	"go-cource-api/application/dto"
 	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
@@ -86,9 +87,9 @@ func (h *PostHandlers) Save(c echo.Context) error {
 	securityContext := c.(*application.SecurityContext)
 
 	post := &entity.Post{
-		Title: postDto.Title,
-		Body: postDto.Body,
-		UserId: securityContext.UserClaims().Id,
+		Title: null.StringFrom(postDto.Title),
+		Body: null.StringFrom(postDto.Body),
+		UserId: null.IntFrom(int64(securityContext.UserClaims().Id)),
 	}
 
 	_, err := h.service.Save(post)
@@ -165,8 +166,8 @@ func (h *PostHandlers) Update(c echo.Context) error {
 
 	updatedPost := &entity.Post{
 		Id: uint64(postId),
-		Title: postDto.Title,
-		Body: postDto.Body,
+		Title: null.StringFrom(postDto.Title),
+		Body: null.StringFrom(postDto.Body),
 	}
 
 	if err = h.service.Update(updatedPost); err != nil {

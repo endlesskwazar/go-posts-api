@@ -3,6 +3,7 @@ package persistence
 import (
 	"github.com/stretchr/testify/assert"
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"testing"
 )
 
@@ -38,7 +39,7 @@ func TestFindByPostIdComments_Success(t *testing.T) {
 
 	repo := NewCommentRepository(conn)
 
-	comments, err := repo.FindByPostId(comment.PostId)
+	comments, err := repo.FindByPostId(comment.PostId.Int64)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, comments)
@@ -52,8 +53,8 @@ func TestSaveComment_Success(t *testing.T) {
 
 	comment := &entity.Comment{
 		UserId: post.UserId,
-		PostId: post.Id,
-		Body: "test body",
+		PostId: null.IntFrom(post.Id),
+		Body: null.StringFrom("test body"),
 	}
 
 	saved, err := repo.Save(comment)
@@ -91,7 +92,7 @@ func TestUpdateComment_Success(t *testing.T) {
 	comment := SeedComment(conn)
 
 	updated := &entity.Comment{
-		Body: "updated",
+		Body: null.StringFrom("updated"),
 		Id: comment.Id,
 		UserId: comment.UserId,
 		PostId: comment.PostId,

@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -18,9 +19,9 @@ func DBConn() *gorm.DB {
 
 func SeedUser(db *gorm.DB) *entity.User {
 	user := &entity.User{
-		Name: "test",
-		Password: "$2y$14$1ydnM3J094ycL7Fe6CSxT.y6O8airXr.sdlUq0.MMYHCONIMzkdv6",
-		Email: "test@mail.com",
+		Name: null.StringFrom("test"),
+		Password: null.StringFrom("$2y$14$1ydnM3J094ycL7Fe6CSxT.y6O8airXr.sdlUq0.MMYHCONIMzkdv6"),
+		Email: null.StringFrom("test@mail.com"),
 	}
 
 	db.Create(&user)
@@ -32,9 +33,9 @@ func SeedPost(db *gorm.DB) *entity.Post {
 	user := SeedUser(db)
 
 	post := &entity.Post{
-		Title: "Test post",
-		Body: "Test body",
-		UserId: user.Id,
+		Title: null.StringFrom("Test post"),
+		Body: null.StringFrom("Test body"),
+		UserId: null.IntFrom(user.Id),
 	}
 
 	db.Create(&post)
@@ -46,9 +47,9 @@ func SeedComment(db *gorm.DB) *entity.Comment {
 	post := SeedPost(db)
 
 	comment := &entity.Comment{
-		Body: "Test body",
+		Body: null.StringFrom("Test body"),
 		UserId: post.UserId,
-		PostId: post.Id,
+		PostId: null.IntFrom(post.Id),
 	}
 
 	db.Create(comment)

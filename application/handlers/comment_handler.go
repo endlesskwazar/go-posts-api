@@ -6,6 +6,7 @@ import (
 	"go-cource-api/application/dto"
 	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
+	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
@@ -74,9 +75,9 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 	}
 
 	comment := &entity.Comment{
-		Body: commentDto.Body,
-		PostId: uint64(postId),
-		UserId: securityContext.UserClaims().Id,
+		Body: null.StringFrom(commentDto.Body),
+		PostId: null.IntFrom(int64(postId)),
+		UserId: null.IntFrom(int64(securityContext.UserClaims().Id)),
 	}
 
 	_, err = h.service.Save(comment)
@@ -123,11 +124,11 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 
 	securityContext := c.(*application.SecurityContext)
 
-	if comment.UserId != securityContext.UserClaims().Id {
+	if uint64(comment.UserId.Int64) != securityContext.UserClaims().Id {
 		return echo.NewHTTPError(http.StatusNotFound, "Not found")
 	}
 
-	comment.Body = commentDto.Body
+	comment.Body = null.StringFrom(commentDto.Body)
 
 	if err = h.service.Update(comment); err != nil {
 		return err
@@ -159,7 +160,7 @@ func (h *CommentHandlers) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, err)
 	}
 
-	if securityContext.UserClaims().Id != comment.UserId {
+	if securityContext.UserClaims().Id != uint64(comment.UserId.Int64) {
 		return echo.NewHTTPError(http.StatusForbidden, "You can't perform operation")
 	}
 

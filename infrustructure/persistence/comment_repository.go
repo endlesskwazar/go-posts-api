@@ -27,7 +27,7 @@ func (r *CommentRepo) FindAll() ([]entity.Comment, error) {
 	return comments, nil
 }
 
-func (r *CommentRepo) FindById(id uint64) (*entity.Comment, error) {
+func (r *CommentRepo) FindById(id int64) (*entity.Comment, error) {
 	var comment entity.Comment
 
 	if err := r.db.Where("id = ?", id).Take(&comment).Error; err != nil {
@@ -37,7 +37,7 @@ func (r *CommentRepo) FindById(id uint64) (*entity.Comment, error) {
 	return &comment, nil
 }
 
-func (r *CommentRepo) FindByPostId(postId uint64) ([]entity.Comment, error) {
+func (r *CommentRepo) FindByPostId(postId int64) ([]entity.Comment, error) {
 	var comments []entity.Comment
 
 	if err := r.db.Where("post_id = ?", postId).Find(&comments).Error; err != nil {
@@ -55,7 +55,7 @@ func (r *CommentRepo) Save(comment *entity.Comment) (*entity.Comment, error) {
 	return comment, nil
 }
 
-func (r *CommentRepo) Delete(id uint64) error {
+func (r *CommentRepo) Delete(id int64) error {
 	err := r.db.Delete(&entity.Comment{}, id).Error
 
 	return err

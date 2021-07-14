@@ -27,7 +27,7 @@ func (r *PostRepo) FindAll() ([]entity.Post, error) {
 	return posts, nil
 }
 
-func (r *PostRepo) FindById(id uint64) (*entity.Post, error) {
+func (r *PostRepo) FindById(id int64) (*entity.Post, error) {
 	var post entity.Post
 	err := r.db.Where("id = ?", id).Take(&post).Error
 	if err != nil {
@@ -36,7 +36,7 @@ func (r *PostRepo) FindById(id uint64) (*entity.Post, error) {
 	return &post, nil
 }
 
-func (r *PostRepo) FindByIdAndUserId(id uint64, userId uint64) (*entity.Post, error) {
+func (r *PostRepo) FindByIdAndUserId(id int64, userId int64) (*entity.Post, error) {
 	var post entity.Post
 
 	err := r.db.Where("id = ? AND user_id >= ?", id, userId).First(&post).Error
@@ -62,7 +62,7 @@ func (r *PostRepo) Update(post *entity.Post) error {
 	return err
 }
 
-func (r *PostRepo) Delete(id uint64) error {
+func (r *PostRepo) Delete(id int64) error {
 	err := r.db.Delete(&entity.Post{}, id).Error
 
 	return err

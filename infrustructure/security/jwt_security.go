@@ -7,6 +7,7 @@ import (
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 	"net/http"
 	"time"
@@ -35,8 +36,8 @@ func (s *JwtSecurity) IsUserExists(email string) bool {
 }
 
 func (s *JwtSecurity) RegisterUser(user *entity.User) error {
-	hashedPassword, _ := s.HashPassword(user.Password)
-	user.Password = string(hashedPassword)
+	hashedPassword, _ := s.HashPassword(user.Password.String)
+	user.Password = null.StringFrom(string(hashedPassword))
 
 	if _, err := s.userRepo.Save(user); err != nil {
 		return err
@@ -56,7 +57,7 @@ func (s *JwtSecurity) LoginUser(email string, password string) (*string, error) 
 		return nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 
-	err = s.VerifyPassword(password, user.Password)
+	err = s.VerifyPassword(password, user.Password.String)
 
 	if err != nil {
 		return  nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
@@ -72,7 +73,7 @@ func (s *JwtSecurity) VerifyPassword(plain string, hash string) error {
 func (s *JwtSecurity) GenerateToken(user entity.User) (*string, error) {
 	claims := &JwtCustomClaims{
 		Id:    user.Id,
-		Email: user.Email,
+		Email: user.Email.String,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
