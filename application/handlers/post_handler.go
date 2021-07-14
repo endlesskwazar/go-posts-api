@@ -54,7 +54,7 @@ func (h *PostHandlers) FindOne(c echo.Context) error {
 		return err
 	}
 
-	post, err := h.service.FindById(uint64(id))
+	post, err := h.service.FindById(int64(id))
 
 	if err != nil {
 		return err
@@ -70,6 +70,7 @@ func (h *PostHandlers) FindOne(c echo.Context) error {
 // @Tags Posts
 // @Accept xml,json
 // @Produce  xml,json
+// @security ApiKeyAuth
 // @Param dto.PostDto body dto.PostDto false "Post data"
 // @Success 201 {object} entity.Comment
 // @Router /api/v1/posts [post]
@@ -106,6 +107,7 @@ func (h *PostHandlers) Save(c echo.Context) error {
 // @Summary Delete post
 // @Description Delete post
 // @Tags Posts
+// @security ApiKeyAuth
 // @Param id path int true "Post id"
 // @Success 204
 // @Router /api/v1/posts/{id} [delete]
@@ -119,13 +121,13 @@ func (h *PostHandlers) Delete(c echo.Context) error {
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
-	_, err = h.service.FindByIdAndUserId(uint64(postId), userId)
+	_, err = h.service.FindByIdAndUserId(int64(postId), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
 	}
 
-	if err = h.service.Delete(uint64(postId)); err != nil {
+	if err = h.service.Delete(int64(postId)); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
@@ -139,6 +141,7 @@ func (h *PostHandlers) Delete(c echo.Context) error {
 // @Tags Posts
 // @Accept xml,json
 // @Produce  xml,json
+// @security ApiKeyAuth
 // @Param dto.UpdatePostDto body dto.UpdatePostDto false "Post data"
 // @Param id path int true "Post id"
 // @Success 200 {object} entity.Post
@@ -158,14 +161,14 @@ func (h *PostHandlers) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	_, err := h.service.FindByIdAndUserId(uint64(postId), userId)
+	_, err := h.service.FindByIdAndUserId(int64(postId), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
 	}
 
 	updatedPost := &entity.Post{
-		Id: uint64(postId),
+		Id: int64(postId),
 		Title: null.StringFrom(postDto.Title),
 		Body: null.StringFrom(postDto.Body),
 	}

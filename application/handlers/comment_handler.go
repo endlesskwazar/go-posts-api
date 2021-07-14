@@ -36,7 +36,7 @@ func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 		return err
 	}
 
-	comments, err := h.service.FindByPostId(uint64(postId))
+	comments, err := h.service.FindByPostId(int64(postId))
 
 	if err != nil {
 		return err
@@ -52,6 +52,7 @@ func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 // @Tags Posts
 // @Accept xml,json
 // @Produce  xml,json
+// @security ApiKeyAuth
 // @Param dto.CommentDto body dto.CommentDto false "Comment data"
 // @Success 201 {object} entity.Comment
 // @Router /api/v1/posts/{postId}/comments [post]
@@ -95,6 +96,7 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 // @Tags Comments
 // @Accept xml,json
 // @Produce json,xml
+// @security ApiKeyAuth
 // @Param id path int true "Comment id"
 // @Param dto.UpdateCommentDto body dto.UpdateCommentDto false "Comment data"
 // @Success 200 {array} entity.Comment
@@ -116,7 +118,7 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 		return err
 	}
 
-	comment, err := h.service.FindById(uint64(id))
+	comment, err := h.service.FindById(int64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
@@ -124,7 +126,7 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 
 	securityContext := c.(*application.SecurityContext)
 
-	if uint64(comment.UserId.Int64) != securityContext.UserClaims().Id {
+	if comment.UserId.Int64 != securityContext.UserClaims().Id {
 		return echo.NewHTTPError(http.StatusNotFound, "Not found")
 	}
 
@@ -143,6 +145,7 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 // @Description Delete comment
 // @Tags Comments
 // @Produce json,xml
+// @security ApiKeyAuth
 // @Param id path int true "Comment id"
 // @Success 204
 // @Router /api/v1/comments/{id} [delete]
@@ -154,17 +157,17 @@ func (h *CommentHandlers) Delete(c echo.Context) error {
 		return err
 	}
 
-	comment, err := h.service.FindById(uint64(id))
+	comment, err := h.service.FindById(int64(id))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, err)
 	}
 
-	if securityContext.UserClaims().Id != uint64(comment.UserId.Int64) {
+	if securityContext.UserClaims().Id != comment.UserId.Int64 {
 		return echo.NewHTTPError(http.StatusForbidden, "You can't perform operation")
 	}
 
-	if err = h.service.Delete(uint64(id)); err != nil {
+	if err = h.service.Delete(int64(id)); err != nil {
 		return err
 	}
 

@@ -18,7 +18,10 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Alexandr",
+            "email": "endlesskwazar@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -26,6 +29,11 @@ var doc = `{
     "paths": {
         "/api/v1/comments/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update comment",
                 "consumes": [
                     "text/xml",
@@ -69,6 +77,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete comment",
                 "produces": [
                     "application/json",
@@ -118,6 +131,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create post",
                 "consumes": [
                     "text/xml",
@@ -181,6 +199,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update post",
                 "consumes": [
                     "text/xml",
@@ -221,6 +244,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete post",
                 "tags": [
                     "Posts"
@@ -275,6 +303,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Creates comment for post",
                 "consumes": [
                     "text/xml",
@@ -466,13 +499,13 @@ var doc = `{
                     "type": "integer"
                 },
                 "postId": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "updatedAt": {
                     "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -495,7 +528,7 @@ var doc = `{
                     "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -506,6 +539,13 @@ var doc = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -521,12 +561,12 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "",
-	Host:        "",
+	Version:     "1.0",
+	Host:        "http://localhost:8000",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "",
-	Description: "",
+	Title:       "Posts API documentation",
+	Description: "Swagger API for Golang Post Project.",
 }
 
 type s struct{}

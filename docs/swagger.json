@@ -1,11 +1,23 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Swagger API for Golang Post Project.",
+        "title": "Posts API documentation",
+        "contact": {
+            "name": "Alexandr",
+            "email": "endlesskwazar@gmail.com"
+        },
+        "version": "1.0"
     },
+    "host": "http://localhost:8000",
     "paths": {
         "/api/v1/comments/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update comment",
                 "consumes": [
                     "text/xml",
@@ -49,6 +61,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete comment",
                 "produces": [
                     "application/json",
@@ -98,6 +115,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create post",
                 "consumes": [
                     "text/xml",
@@ -161,6 +183,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update post",
                 "consumes": [
                     "text/xml",
@@ -201,6 +228,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete post",
                 "tags": [
                     "Posts"
@@ -255,6 +287,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Creates comment for post",
                 "consumes": [
                     "text/xml",
@@ -446,13 +483,13 @@
                     "type": "integer"
                 },
                 "postId": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "updatedAt": {
                     "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -475,7 +512,7 @@
                     "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -486,6 +523,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

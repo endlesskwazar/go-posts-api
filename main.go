@@ -14,6 +14,17 @@ import (
 	"go-cource-api/routes"
 )
 
+// @title Posts API documentation
+// @version 1.0
+// @description Swagger API for Golang Post Project.
+// @host http://localhost:8000
+
+// @contact.name Alexandr
+// @contact.email endlesskwazar@gmail.com
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	appConfig := config.NewConfig()
 
