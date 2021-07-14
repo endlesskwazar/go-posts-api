@@ -1,20 +1,20 @@
-package errors
+package application
 
 import (
 	"fmt"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	config2 "go-cource-api/application/config"
+	"go-cource-api/application/config"
 	"net/http"
 )
 
 func ErrorHandler(err error, c echo.Context) {
 	report, ok := err.(*echo.HTTPError)
-	config := c.Get("config").(config2.Config)
+	appConfig := c.Get("config").(config.Config)
 
 	var serverErrorMessage string
 
-	if config.AppConfig.Env == "prod" {
+	if appConfig.AppConfig.Env == "prod" {
 		serverErrorMessage = "Oops! Something went wrong, Please, try again later or contact support"
 	} else {
 		serverErrorMessage = err.Error()
