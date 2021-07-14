@@ -12,10 +12,11 @@ services:
         ports: 
             - 8000:8000
         volumes:
-            - .:/app
+            - .:/go/src/go-cource-api
         depends_on:
             - mysql
         restart: on-failure
+        command: gin --appPort 8000 --all -i run main.go
 
     mysql:
         image: mysql:8
