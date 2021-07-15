@@ -10,7 +10,7 @@ import (
 	"go-cource-api/application/middlewares"
 	_ "go-cource-api/docs"
 	"go-cource-api/infrustructure/persistence"
-	"go-cource-api/infrustructure/security"
+	"go-cource-api/infrustructure/services"
 	"go-cource-api/routes"
 )
 
@@ -46,7 +46,7 @@ func main() {
 
 	postHandlers := handlers.NewPostHandlers(repositories.Post)
 	commentHandlers := handlers.NewCommentHandlers(repositories.Comment)
-	securityHandlers := handlers.NewSecurityHandlers(security.NewSecurity(repositories.User))
+	securityHandlers := handlers.NewSecurityHandlers(services.NewSecurityService(repositories.User))
 
 	responder := application.NewResponseResponder()
 

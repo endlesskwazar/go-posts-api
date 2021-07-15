@@ -19,7 +19,7 @@ func TestFindByPostId_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewCommentHandlers(commentRepo)
-	postId := uint64(1)
+	postId := int64(1)
 
 	commentRepo.
 		EXPECT().
@@ -73,7 +73,7 @@ func TestUpdateComment_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	commentRepo := mock.NewMockCommentRepository(ctrl)
 
-	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
+	commentRepo.EXPECT().FindById(int64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
 	commentRepo.EXPECT().Update(gomock.Any())
 
 	commentHandlers := NewCommentHandlers(commentRepo)
@@ -106,8 +106,8 @@ func TestDeleteComment_Success(t *testing.T) {
 	commentRepo := mock.NewMockCommentRepository(ctrl)
 	commentHandlers := NewCommentHandlers(commentRepo)
 
-	commentRepo.EXPECT().FindById(uint64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
-	commentRepo.EXPECT().Delete(uint64(1))
+	commentRepo.EXPECT().FindById(int64(1)).Return(&entity.Comment{UserId: null.IntFrom(1)}, nil)
+	commentRepo.EXPECT().Delete(int64(1))
 
 	e := BuildApp()
 

@@ -35,7 +35,7 @@ func (m *MockCommentRepository) EXPECT() *MockCommentRepositoryMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockCommentRepository) Delete(arg0 uint64) error {
+func (m *MockCommentRepository) Delete(arg0 int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0)
 	ret0, _ := ret[0].(error)
@@ -64,33 +64,33 @@ func (mr *MockCommentRepositoryMockRecorder) FindAll() *gomock.Call {
 }
 
 // FindById mocks base method.
-func (m *MockCommentRepository) FindById(arg0 uint64) (*entity.Comment, error) {
+func (m *MockCommentRepository) FindById(id int64) (*entity.Comment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindById", arg0)
+	ret := m.ctrl.Call(m, "FindById", id)
 	ret0, _ := ret[0].(*entity.Comment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindById indicates an expected call of FindById.
-func (mr *MockCommentRepositoryMockRecorder) FindById(arg0 interface{}) *gomock.Call {
+func (mr *MockCommentRepositoryMockRecorder) FindById(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindById", reflect.TypeOf((*MockCommentRepository)(nil).FindById), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindById", reflect.TypeOf((*MockCommentRepository)(nil).FindById), id)
 }
 
 // FindByPostId mocks base method.
-func (m *MockCommentRepository) FindByPostId(uint642 uint64) ([]entity.Comment, error) {
+func (m *MockCommentRepository) FindByPostId(id int64) ([]entity.Comment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByPostId", uint642)
+	ret := m.ctrl.Call(m, "FindByPostId", id)
 	ret0, _ := ret[0].([]entity.Comment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByPostId indicates an expected call of FindByPostId.
-func (mr *MockCommentRepositoryMockRecorder) FindByPostId(uint642 interface{}) *gomock.Call {
+func (mr *MockCommentRepositoryMockRecorder) FindByPostId(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPostId", reflect.TypeOf((*MockCommentRepository)(nil).FindByPostId), uint642)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPostId", reflect.TypeOf((*MockCommentRepository)(nil).FindByPostId), id)
 }
 
 // Save mocks base method.

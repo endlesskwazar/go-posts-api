@@ -10,7 +10,6 @@ import (
 	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/security"
-	"go-cource-api/infrustructure/services"
 	"golang.org/x/oauth2"
 	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
@@ -20,10 +19,10 @@ import (
 )
 
 type SecurityHandlers struct {
-	service services.SecurityService
+	service security.TokenSecurity
 }
 
-func NewSecurityHandlers(service services.SecurityService) *SecurityHandlers {
+func NewSecurityHandlers(service security.TokenSecurity) *SecurityHandlers {
 	return &SecurityHandlers{
 		service: service,
 	}

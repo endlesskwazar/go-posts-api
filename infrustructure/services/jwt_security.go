@@ -1,10 +1,11 @@
-package security
+package services
 
 import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
+	"go-cource-api/infrustructure/security"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/guregu/null.v4"
 	"net/http"
@@ -15,11 +16,11 @@ type JwtSecurity struct {
 	userRepo repository.UserRepository
 }
 
-func NewSecurity(userRepo repository.UserRepository) *JwtSecurity {
+func NewSecurityService(userRepo repository.UserRepository) *JwtSecurity {
 	return &JwtSecurity{userRepo}
 }
 
-var _ TokenSecurity = &JwtSecurity{}
+var _ security.TokenSecurity = &JwtSecurity{}
 
 func (s *JwtSecurity) RegisterUser(user *entity.User) error {
 	hashedPassword, _ := s.HashPassword(user.Password.String)
@@ -57,7 +58,7 @@ func (s *JwtSecurity) VerifyPassword(plain string, hash string) error {
 }
 
 func (s *JwtSecurity) GenerateToken(user entity.User) (*string, error) {
-	claims := &JwtCustomClaims{
+	claims := &security.JwtCustomClaims{
 		Id:    user.Id,
 		Email: user.Email.String,
 		StandardClaims: jwt.StandardClaims{

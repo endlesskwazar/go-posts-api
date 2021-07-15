@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	mock "go-cource-api/application/_mocks"
-	dto "go-cource-api/application/dto"
+	"go-cource-api/application/dto"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -41,7 +41,7 @@ func TestLFindOnePost_Success(t *testing.T) {
 	postRepoMock := mock.NewMockPostRepository(ctrl)
 	postHandlers := NewPostHandlers(postRepoMock)
 	postIdStr := "1"
-	postIdInt := uint64(1)
+	postIdInt := int64(1)
 
 	postRepoMock.EXPECT().FindById(postIdInt)
 
@@ -93,8 +93,8 @@ func TestDeletePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
 	postHandlers := NewPostHandlers(postRepo)
-	idToDelete := uint64(1)
-	standardUserId := uint64(1)
+	idToDelete := int64(1)
+	standardUserId := int64(1)
 
 	postRepo.
 		EXPECT().
@@ -124,8 +124,8 @@ func TestUpdatePost_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	postRepo := mock.NewMockPostRepository(ctrl)
 	postHandlers := NewPostHandlers(postRepo)
-	standardUserId := uint64(1)
-	postIdToUpdate := uint64(1)
+	standardUserId := int64(1)
+	postIdToUpdate := int64(1)
 
 	postRepo.
 		EXPECT().

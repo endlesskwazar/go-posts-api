@@ -15,7 +15,7 @@ import (
 
 func TestRegister_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock.NewMockTokenSecurity(ctrl)
 	securityMock.EXPECT().RegisterUser(gomock.Any())
 
 	securityHandlers := NewSecurityHandlers(securityMock)
@@ -42,7 +42,7 @@ func TestRegister_Success(t *testing.T) {
 
 func TestLogin_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock.NewMockTokenSecurity(ctrl)
 	mockedToken := "2348962u3ighbj542j34l"
 
 	loginUserDto := &dto.LoginUserDto{
@@ -71,7 +71,7 @@ func TestLogin_Success(t *testing.T) {
 func TestUiLogin_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock.NewMockTokenSecurity(ctrl)
 	securityHandlers := NewSecurityHandlers(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
@@ -87,7 +87,7 @@ func TestUiLogin_Success(t *testing.T) {
 func TestUiRegister_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
-	securityMock := mock.NewMockSecurityAppInterface(ctrl)
+	securityMock := mock.NewMockTokenSecurity(ctrl)
 	securityHandlers := NewSecurityHandlers(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)

@@ -8,4 +8,5 @@ type TokenSecurity interface {
 	RegisterUser(user *entity.User) error
 	VerifyPassword(string, string) error
 	GenerateToken(entity.User) (*string, error)
+	FindUserByEmail(email string) (*entity.User, error)
 }
