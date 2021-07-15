@@ -57,7 +57,5 @@ func main() {
 	routes.InitAuthRoutes(e, securityHandlers)
 	routes.InitApiV1Routes(e, postHandlers, commentHandlers)
 
-	// Start server
-	serverUrl := ":" + appConfig.AppConfig.Port
-	e.Logger.Fatal(e.Start(serverUrl))
+	e.Logger.Fatal(e.Start(appConfig.AppConfig.Address))
 }

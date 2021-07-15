@@ -3,13 +3,14 @@ package config
 import "os"
 
 type AppConfig struct {
-	Port string
-	Env string
+	Address string
+	Env     string
 }
 
 func NewAppConfig() *AppConfig {
+	address :=  ":" + os.Getenv("APP_PORT")
 	return &AppConfig{
-		Port: os.Getenv("APP_PORT"),
-		Env: os.Getenv("APP_ENV"),
+		Address: address,
+		Env:     os.Getenv("APP_ENV"),
 	}
 }
