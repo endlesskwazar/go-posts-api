@@ -4,18 +4,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
-	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
+	services2 "go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
 
 type CommentHandlers struct {
-	service services.CommentService
+	service services2.CommentService
 }
 
-func NewCommentHandlers(service services.CommentService) *CommentHandlers {
+func NewCommentHandlers(service services2.CommentService) *CommentHandlers {
 	return &CommentHandlers{
 		service: service,
 	}

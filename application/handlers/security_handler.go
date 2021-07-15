@@ -8,9 +8,9 @@ import (
 	"github.com/thanhpk/randstr"
 	"go-cource-api/application/config"
 	"go-cource-api/application/dto"
-	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/security"
+	"go-cource-api/infrustructure/services"
 	"golang.org/x/oauth2"
 	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ type SecurityHandlers struct {
 	service services.SecurityService
 }
 
-func NewSecurity(service services.SecurityService) *SecurityHandlers {
+func NewSecurityHandlers(service services.SecurityService) *SecurityHandlers {
 	return &SecurityHandlers{
 		service: service,
 	}

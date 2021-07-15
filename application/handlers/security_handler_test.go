@@ -18,7 +18,7 @@ func TestRegister_Success(t *testing.T) {
 	securityMock := mock.NewMockSecurityAppInterface(ctrl)
 	securityMock.EXPECT().RegisterUser(gomock.Any())
 
-	securityHandlers := NewSecurity(securityMock)
+	securityHandlers := NewSecurityHandlers(securityMock)
 
 	e := BuildApp()
 
@@ -52,7 +52,7 @@ func TestLogin_Success(t *testing.T) {
 
 	securityMock.EXPECT().LoginUser(loginUserDto.Email, loginUserDto.Password).Return(&mockedToken, nil)
 
-	securityHandlers := NewSecurity(securityMock)
+	securityHandlers := NewSecurityHandlers(securityMock)
 
 	e := BuildApp()
 
@@ -72,7 +72,7 @@ func TestUiLogin_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
 	securityMock := mock.NewMockSecurityAppInterface(ctrl)
-	securityHandlers := NewSecurity(securityMock)
+	securityHandlers := NewSecurityHandlers(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -88,7 +88,7 @@ func TestUiRegister_Success(t *testing.T) {
 	e := BuildApp()
 	ctrl := gomock.NewController(t)
 	securityMock := mock.NewMockSecurityAppInterface(ctrl)
-	securityHandlers := NewSecurity(securityMock)
+	securityHandlers := NewSecurityHandlers(securityMock)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)

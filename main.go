@@ -46,7 +46,7 @@ func main() {
 
 	postHandlers := handlers.NewPostHandlers(repositories.Post)
 	commentHandlers := handlers.NewCommentHandlers(repositories.Comment)
-	securityHandlers := handlers.NewSecurity(security.NewSecurity(repositories.User))
+	securityHandlers := handlers.NewSecurityHandlers(security.NewSecurity(repositories.User))
 
 	responder := application.NewResponseResponder()
 

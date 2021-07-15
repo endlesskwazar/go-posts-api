@@ -1,14 +1,12 @@
 package security
 
 import (
-	"errors"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/domain/entity"
 	"go-cource-api/domain/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/guregu/null.v4"
-	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -22,18 +20,6 @@ func NewSecurity(userRepo repository.UserRepository) *JwtSecurity {
 }
 
 var _ TokenSecurity = &JwtSecurity{}
-
-func (s *JwtSecurity) IsUserExists(email string) bool {
-	_, err := s.userRepo.FindByEmail(email)
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false
-		}
-	}
-
-	return true
-}
 
 func (s *JwtSecurity) RegisterUser(user *entity.User) error {
 	hashedPassword, _ := s.HashPassword(user.Password.String)

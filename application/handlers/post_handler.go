@@ -4,18 +4,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
-	"go-cource-api/application/services"
 	"go-cource-api/domain/entity"
+	services2 "go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
 
 type PostHandlers struct {
-	service services.PostService
+	service services2.PostService
 }
 
-func NewPostHandlers(service services.PostService) *PostHandlers {
+func NewPostHandlers(service services2.PostService) *PostHandlers {
 	return &PostHandlers{
 		service: service,
 	}
