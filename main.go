@@ -44,6 +44,7 @@ func main() {
 
 	routes.InitAuthRoutes(e, securityHandlers)
 	routes.InitApiV1Routes(e, postHandlers, commentHandlers)
+	routes.InitSwaggerRoute(e)
 
 	e.Logger.Fatal(e.Start(appConfig.AppConfig.Address))
 }
