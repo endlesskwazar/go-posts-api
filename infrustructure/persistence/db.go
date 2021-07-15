@@ -19,8 +19,8 @@ type Repositories struct {
 	db   *gorm.DB
 }
 
-func NewRepositories(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repositories, error) {
-	dsn := DbUser + ":" + DbPassword + "@tcp(" + DbHost + ":" + DbPort + ")/" + DbName + "?parseTime=true"
+func NewRepositories(config *DatabaseConfig) (*Repositories, error) {
+	dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Host + ")/" + config.DbName + "?parseTime=true"
 
 	gormLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer

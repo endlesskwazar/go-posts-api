@@ -28,13 +28,7 @@ import (
 func main() {
 	appConfig := config.NewConfig()
 
-	repositories, err := persistence.NewRepositories(
-		appConfig.DatabaseConfig.User,
-		appConfig.DatabaseConfig.Password,
-		appConfig.DatabaseConfig.Port,
-		appConfig.DatabaseConfig.Host,
-		appConfig.DatabaseConfig.DbName,
-	)
+	repositories, err := persistence.NewRepositories(appConfig.DatabaseConfig)
 
 	if err != nil {
 		panic(err)
