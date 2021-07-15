@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"github.com/swaggo/echo-swagger"
 	"go-cource-api/application"
 	"go-cource-api/application/config"
 	"go-cource-api/application/handlers"
@@ -12,6 +11,10 @@ import (
 	"go-cource-api/infrustructure/persistence"
 	"go-cource-api/infrustructure/services"
 	"go-cource-api/routes"
+)
+
+var (
+	appConfig *config.Config
 )
 
 // @title Posts API documentation
@@ -26,15 +29,10 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	appConfig := config.NewConfig()
+	appConfig = config.NewConfig()
 
-	repositories, err := persistence.NewRepositories(appConfig.DatabaseConfig)
-
+	repositories, err := buildRepositories()
 	if err != nil {
-		panic(err)
-	}
-
-	if err = repositories.Automigrate(); err != nil {
 		panic(err)
 	}
 
@@ -42,9 +40,32 @@ func main() {
 	commentHandlers := handlers.NewCommentHandlers(repositories.Comment)
 	securityHandlers := handlers.NewSecurityHandlers(services.NewSecurityService(repositories.User))
 
+	e := buildApp()
+
+	routes.InitAuthRoutes(e, securityHandlers)
+	routes.InitApiV1Routes(e, postHandlers, commentHandlers)
+
+	e.Logger.Fatal(e.Start(appConfig.AppConfig.Address))
+}
+
+func buildRepositories() (*persistence.Repositories, error) {
+	repositories, err := persistence.NewRepositories(appConfig.DatabaseConfig)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err = repositories.Automigrate(); err != nil {
+		return nil, err
+	}
+
+	return repositories, nil
+}
+
+func buildApp() *echo.Echo {
+	e := echo.New()
 	responder := application.NewResponseResponder()
 
-	e := echo.New()
 	e.Use(middlewares.ConfigInjectorMiddleware(appConfig))
 	e.Use(middlewares.ResponderInjectorMiddleware(responder))
 	e.Validator = &application.CustomValidator{
@@ -52,10 +73,6 @@ func main() {
 	}
 	e.HTTPErrorHandler = application.ErrorHandler
 	e.Renderer = application.Renderer()
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	routes.InitAuthRoutes(e, securityHandlers)
-	routes.InitApiV1Routes(e, postHandlers, commentHandlers)
-
-	e.Logger.Fatal(e.Start(appConfig.AppConfig.Address))
+	return e
 }
