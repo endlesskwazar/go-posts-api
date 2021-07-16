@@ -5,17 +5,17 @@ import (
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
-	services2 "go-cource-api/infrustructure/services"
+	"go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
 
 type PostHandlers struct {
-	service services2.PostService
+	service services.PostService
 }
 
-func NewPostHandlers(service services2.PostService) *PostHandlers {
+func NewPostHandlers(service services.PostService) *PostHandlers {
 	return &PostHandlers{
 		service: service,
 	}

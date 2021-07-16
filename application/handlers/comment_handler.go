@@ -5,17 +5,17 @@ import (
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
-	services2 "go-cource-api/infrustructure/services"
+	"go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
 	"net/http"
 	"strconv"
 )
 
 type CommentHandlers struct {
-	service services2.CommentService
+	service services.CommentService
 }
 
-func NewCommentHandlers(service services2.CommentService) *CommentHandlers {
+func NewCommentHandlers(service services.CommentService) *CommentHandlers {
 	return &CommentHandlers{
 		service: service,
 	}
