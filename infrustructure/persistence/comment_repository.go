@@ -37,10 +37,10 @@ func (r *CommentRepo) FindById(id int64) (*entity.Comment, error) {
 	return &comment, nil
 }
 
-func (r *CommentRepo) FindByPostId(postId int64) ([]entity.Comment, error) {
+func (r *CommentRepo) FindByPostId(id int64) ([]entity.Comment, error) {
 	var comments []entity.Comment
 
-	if err := r.db.Where("post_id = ?", postId).Find(&comments).Error; err != nil {
+	if err := r.db.Where("post_id = ?", id).Find(&comments).Error; err != nil {
 		return nil, err
 	}
 

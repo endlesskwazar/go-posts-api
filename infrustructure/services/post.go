@@ -12,7 +12,7 @@ type postService struct {
 var _ PostService = &postService{}
 
 type PostService interface {
-	Save(*entity.Post) (*entity.Post, error)
+	Save(post *entity.Post) (*entity.Post, error)
 	FindAll() ([]entity.Post, error)
 	FindById(id int64) (*entity.Post, error)
 	Delete(id int64) error

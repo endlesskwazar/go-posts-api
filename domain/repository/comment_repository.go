@@ -7,7 +7,7 @@ type CommentRepository interface {
 	FindByPostId(id int64) ([]entity.Comment, error)
 	FindById(id int64) (*entity.Comment, error)
 	FindAll() ([]entity.Comment, error)
-	Delete(int64) error
-	Update(*entity.Comment) error
+	Delete(id int64) error
+	Update(comment *entity.Comment) error
 }
 
