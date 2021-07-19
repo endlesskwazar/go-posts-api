@@ -23,5 +23,5 @@ func ErrorHandler(err error, c echo.Context) {
 	}
 
 	c.Logger().Error(report)
-	err = c.JSON(report.Code, report)
+	_ = c.JSON(report.Code, report)
 }

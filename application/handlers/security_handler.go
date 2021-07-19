@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +11,6 @@ import (
 	"go-cource-api/application/dto"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/security"
-	"golang.org/x/oauth2"
 	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 	"io"
@@ -120,13 +120,13 @@ func (h *SecurityHandlers) SocialLoginSuccess(c echo.Context) error {
 
 	switch provider {
 	case "google":
-		exchange, err := appConfig.GoogleOauthConfig.Exchange(oauth2.NoContext, code)
+		exchange, err := appConfig.GoogleOauthConfig.Exchange(context.Background(), code)
 		if err != nil {
 			return fmt.Errorf("code exchange failed: %s", err.Error())
 		}
 		userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + exchange.AccessToken
 	case "facebook":
-		exchange, err := appConfig.FaceBookOauthConfig.Exchange(oauth2.NoContext, code)
+		exchange, err := appConfig.FaceBookOauthConfig.Exchange(context.Background(), code)
 		if err != nil {
 			return fmt.Errorf("code exchange failed: %s", err.Error())
 		}
@@ -190,7 +190,7 @@ func getUserInfo(userDetailsUrl string) ([]byte, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			panic(err.Error())
 		}
 	}(response.Body)
 
