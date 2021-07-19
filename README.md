@@ -54,7 +54,7 @@ swag init
   
 # TODO
 
-- [ ] Fix docker development setup clashing with local go
+- [X] Fix docker development setup clashing with local go
 - [ ] Fix database migrations on every test(Migrate once and rollback inserted data after each test)
 - [ ] Implement Twitter oauth(waiting for dev acc app verification)
 - [X] Implement Own error handler
@@ -67,3 +67,5 @@ swag init
 - [ ] Extract test database config to envs
 - [ ] Add tests for social oauth
 - [ ] Pass url to templates(login, register). Don't hardcode it. Mb, pass config or use helper func
+- [ ] Use one point of build app for tests and real app. Customize params by env
+- [ ] Cache deps in Drone CI steps
