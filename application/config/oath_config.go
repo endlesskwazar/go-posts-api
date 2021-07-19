@@ -22,9 +22,9 @@ func NewGoogleOauthConfig() *oauth2.Config {
 
 func NewFaceBookOauthConfig() *oauth2.Config {
 	return &oauth2.Config{
-		ClientID: os.Getenv("FACEBOOK_CLIENT_ID"),
+		ClientID:     os.Getenv("FACEBOOK_CLIENT_ID"),
 		ClientSecret: os.Getenv("FACEBOOK_CLIENT_SECRET"),
-		RedirectURL: os.Getenv("FACEBOOK_SUCCESS_URL"),
+		RedirectURL:  os.Getenv("FACEBOOK_SUCCESS_URL"),
 		Scopes: []string{
 			"public_profile",
 			"email",

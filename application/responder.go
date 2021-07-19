@@ -9,7 +9,7 @@ type Responder interface {
 	Respond(c echo.Context, code int, content interface{}) error
 }
 
-type ResponseResponder struct {}
+type ResponseResponder struct{}
 
 var _ Responder = &ResponseResponder{}
 
@@ -17,7 +17,7 @@ func NewResponseResponder() *ResponseResponder {
 	return &ResponseResponder{}
 }
 
-func(r *ResponseResponder) Respond(c echo.Context, code int, content interface{}) error {
+func (r *ResponseResponder) Respond(c echo.Context, code int, content interface{}) error {
 	accept := c.Request().Header.Get("Accept")
 
 	switch accept {

@@ -19,9 +19,9 @@ func DBConn() *gorm.DB {
 
 func SeedUser(db *gorm.DB) *entity.User {
 	user := &entity.User{
-		Name: null.StringFrom("test"),
+		Name:     null.StringFrom("test"),
 		Password: null.StringFrom("$2y$14$1ydnM3J094ycL7Fe6CSxT.y6O8airXr.sdlUq0.MMYHCONIMzkdv6"),
-		Email: null.StringFrom("test@mail.com"),
+		Email:    null.StringFrom("test@mail.com"),
 	}
 
 	db.Create(&user)
@@ -33,8 +33,8 @@ func SeedPost(db *gorm.DB) *entity.Post {
 	user := SeedUser(db)
 
 	post := &entity.Post{
-		Title: null.StringFrom("Test post"),
-		Body: null.StringFrom("Test body"),
+		Title:  null.StringFrom("Test post"),
+		Body:   null.StringFrom("Test body"),
 		UserId: null.IntFrom(user.Id),
 	}
 
@@ -47,7 +47,7 @@ func SeedComment(db *gorm.DB) *entity.Comment {
 	post := SeedPost(db)
 
 	comment := &entity.Comment{
-		Body: null.StringFrom("Test body"),
+		Body:   null.StringFrom("Test body"),
 		UserId: post.UserId,
 		PostId: null.IntFrom(post.Id),
 	}

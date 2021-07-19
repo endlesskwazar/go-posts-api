@@ -54,7 +54,7 @@ func TestSaveComment_Success(t *testing.T) {
 	comment := &entity.Comment{
 		UserId: post.UserId,
 		PostId: null.IntFrom(post.Id),
-		Body: null.StringFrom("test body"),
+		Body:   null.StringFrom("test body"),
 	}
 
 	saved, err := repo.Save(comment)
@@ -80,7 +80,7 @@ func TestDeleteComment_Success(t *testing.T) {
 
 	comment := SeedComment(conn)
 
-	 err := repo.Delete(comment.Id)
+	err := repo.Delete(comment.Id)
 
 	assert.Nil(t, err)
 }
@@ -92,8 +92,8 @@ func TestUpdateComment_Success(t *testing.T) {
 	comment := SeedComment(conn)
 
 	updated := &entity.Comment{
-		Body: null.StringFrom("updated"),
-		Id: comment.Id,
+		Body:   null.StringFrom("updated"),
+		Id:     comment.Id,
 		UserId: comment.UserId,
 		PostId: comment.PostId,
 	}

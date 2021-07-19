@@ -12,8 +12,8 @@ func TestSavePost_Success(t *testing.T) {
 	testUser := SeedUser(conn)
 
 	var post = entity.Post{
-		Title: null.StringFrom("test title"),
-		Body: null.StringFrom("test body"),
+		Title:  null.StringFrom("test title"),
+		Body:   null.StringFrom("test body"),
 		UserId: null.IntFrom(testUser.Id),
 	}
 
@@ -54,9 +54,9 @@ func TestUpdatePost_Success(t *testing.T) {
 	repo := NewPostRepository(conn)
 
 	updatedPost := &entity.Post{
-		Id: post.Id,
+		Id:    post.Id,
 		Title: null.StringFrom("Updated"),
-		Body: null.StringFrom("Updated"),
+		Body:  null.StringFrom("Updated"),
 	}
 
 	err := repo.Update(updatedPost)
@@ -104,5 +104,3 @@ func TestFindByIdAndUserIdPost_Success(t *testing.T) {
 	assert.NotNil(t, foundedPost)
 	assert.EqualValues(t, post.Id, foundedPost.Id)
 }
-
-

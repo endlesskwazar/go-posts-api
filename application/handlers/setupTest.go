@@ -28,12 +28,12 @@ func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.C
 	}
 
 	claims := &security.JwtCustomClaims{
-		Id: 1,
+		Id:    1,
 		Email: "test@mail.com",
 	}
 
-	user :=  &unsecureJWT.Token{
-		Claims:claims,
+	user := &unsecureJWT.Token{
+		Claims: claims,
 	}
 
 	context.Set("user", user)

@@ -92,8 +92,8 @@ func (h *PostHandlers) Save(c echo.Context) error {
 	securityContext := c.(*application.SecurityContext)
 
 	post := &entity.Post{
-		Title: null.StringFrom(postDto.Title),
-		Body: null.StringFrom(postDto.Body),
+		Title:  null.StringFrom(postDto.Title),
+		Body:   null.StringFrom(postDto.Body),
 		UserId: null.IntFrom(int64(securityContext.UserClaims().Id)),
 	}
 
@@ -163,7 +163,6 @@ func (h *PostHandlers) Update(c echo.Context) error {
 			translator.Translate("error.url.parameter", "id"))
 	}
 
-
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
@@ -184,9 +183,9 @@ func (h *PostHandlers) Update(c echo.Context) error {
 	}
 
 	updatedPost := &entity.Post{
-		Id: int64(id),
+		Id:    int64(id),
 		Title: null.StringFrom(postDto.Title),
-		Body: null.StringFrom(postDto.Body),
+		Body:  null.StringFrom(postDto.Body),
 	}
 
 	if err = h.service.Update(updatedPost); err != nil {

@@ -1,5 +1,5 @@
 package lang
 
 type Translator interface {
-	Translate(key string, replace ... string) string
+	Translate(key string, replace ...string) string
 }

@@ -10,4 +10,3 @@ type CommentRepository interface {
 	Delete(id int64) error
 	Update(comment *entity.Comment) error
 }
-

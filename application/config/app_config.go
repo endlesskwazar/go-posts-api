@@ -8,7 +8,7 @@ type AppConfig struct {
 }
 
 func NewAppConfig() *AppConfig {
-	address :=  ":" + os.Getenv("APP_PORT")
+	address := ":" + os.Getenv("APP_PORT")
 	return &AppConfig{
 		Address: address,
 		Env:     os.Getenv("APP_ENV"),

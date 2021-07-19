@@ -16,4 +16,3 @@ func (c *SecurityContext) UserClaims() *security.JwtCustomClaims {
 
 	return claims
 }
-

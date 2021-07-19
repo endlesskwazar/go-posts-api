@@ -23,8 +23,8 @@ func TestRegister_Success(t *testing.T) {
 	e := BuildApp()
 
 	registerDto := &dto.RegisterUserDto{
-		Name: "test",
-		Email: "test@mail.com",
+		Name:     "test",
+		Email:    "test@mail.com",
 		Password: "supersecret",
 	}
 
@@ -46,7 +46,7 @@ func TestLogin_Success(t *testing.T) {
 	mockedToken := "2348962u3ighbj542j34l"
 
 	loginUserDto := &dto.LoginUserDto{
-		Email: "test@mail.com",
+		Email:    "test@mail.com",
 		Password: "supersecret",
 	}
 

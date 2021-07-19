@@ -13,4 +13,3 @@ func TranslatorInjectorMiddleware(translator lang.Translator) echo.MiddlewareFun
 		}
 	}
 }
-

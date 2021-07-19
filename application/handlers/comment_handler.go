@@ -82,7 +82,7 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 	securityContext := c.(*application.SecurityContext)
 
 	comment := &entity.Comment{
-		Body: null.StringFrom(commentDto.Body),
+		Body:   null.StringFrom(commentDto.Body),
 		PostId: null.IntFrom(int64(postId)),
 		UserId: null.IntFrom(int64(securityContext.UserClaims().Id)),
 	}

@@ -28,7 +28,6 @@ func NewSecurityHandlers(service security.TokenSecurity) *SecurityHandlers {
 	}
 }
 
-
 // Register godoc
 // @Summary Register new user
 // @Description Register new user
@@ -106,7 +105,6 @@ func (h *SecurityHandlers) SocialRedirect(c echo.Context) error {
 	if err := c.Redirect(http.StatusFound, redirectUrl); err != nil {
 		return err
 	}
-
 
 	return echo.NewHTTPError(http.StatusInternalServerError, "Social auth error")
 }

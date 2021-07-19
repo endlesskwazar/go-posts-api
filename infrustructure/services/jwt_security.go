@@ -47,7 +47,7 @@ func (s *JwtSecurity) LoginUser(email string, password string) (*string, error) 
 	err = s.VerifyPassword(password, user.Password.String)
 
 	if err != nil {
-		return  nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 
 	return s.GenerateToken(*user)
@@ -71,7 +71,7 @@ func (s *JwtSecurity) GenerateToken(user entity.User) (*string, error) {
 	tokenString, err := token.SignedString([]byte(""))
 
 	if err != nil {
-		return  nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 
 	return &tokenString, nil

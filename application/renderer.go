@@ -25,7 +25,7 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 func Renderer() *TemplateRenderer {
 	_, b, _, _ := runtime.Caller(0)
 	d := path.Join(path.Dir(b))
-	basePath :=  filepath.Dir(d)
+	basePath := filepath.Dir(d)
 
 	return &TemplateRenderer{
 		templates: template.Must(template.ParseGlob(basePath + "/public/views/*.html")),

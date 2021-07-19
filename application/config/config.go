@@ -6,10 +6,10 @@ import (
 )
 
 type Config struct {
-	GoogleOauthConfig *oauth2.Config
+	GoogleOauthConfig   *oauth2.Config
 	FaceBookOauthConfig *oauth2.Config
-	DatabaseConfig *persistence.DatabaseConfig
-	AppConfig *AppConfig
+	DatabaseConfig      *persistence.DatabaseConfig
+	AppConfig           *AppConfig
 }
 
 func NewConfig() *Config {
@@ -19,9 +19,9 @@ func NewConfig() *Config {
 	facebookOauthConfig := NewFaceBookOauthConfig()
 
 	return &Config{
-		GoogleOauthConfig: googleOauthConfig,
-		DatabaseConfig: databaseConfig,
+		GoogleOauthConfig:   googleOauthConfig,
+		DatabaseConfig:      databaseConfig,
 		FaceBookOauthConfig: facebookOauthConfig,
-		AppConfig: appConfig,
+		AppConfig:           appConfig,
 	}
 }

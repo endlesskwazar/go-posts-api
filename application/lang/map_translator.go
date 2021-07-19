@@ -21,4 +21,3 @@ func (m MapTranslator) Translate(key string, replace ...string) string {
 
 	return fmt.Sprintf(value, replace)
 }
-

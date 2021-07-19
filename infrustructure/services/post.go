@@ -36,11 +36,10 @@ func (s *postService) FindByIdAndUserId(id int64, userId int64) (*entity.Post, e
 	return s.postRepository.FindByIdAndUserId(id, userId)
 }
 
-func (s *postService) Delete(id int64) error  {
+func (s *postService) Delete(id int64) error {
 	return s.postRepository.Delete(id)
 }
 
-
-func (s *postService) Update(post *entity.Post) error  {
+func (s *postService) Update(post *entity.Post) error {
 	return s.postRepository.Update(post)
 }

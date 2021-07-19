@@ -33,8 +33,8 @@ func TestSaveUser_Success(t *testing.T) {
 	repo := NewUserRepository(conn)
 
 	user := &entity.User{
-		Name: null.StringFrom("test"),
-		Email: null.StringFrom("test"),
+		Name:     null.StringFrom("test"),
+		Email:    null.StringFrom("test"),
 		Password: null.StringFrom("qweqweqw098798q6475u23hrwrkl"),
 	}
 
@@ -52,8 +52,8 @@ func TestSaveUser_Failure(t *testing.T) {
 	repo := NewUserRepository(conn)
 
 	user := &entity.User{
-		Name: null.StringFrom("test"),
-		Email: seeded.Email,
+		Name:     null.StringFrom("test"),
+		Email:    seeded.Email,
 		Password: null.StringFrom("qweqweqw098798q6475u23hrwrkl"),
 	}
 
