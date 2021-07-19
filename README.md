@@ -10,6 +10,19 @@ docker-compose up --build
 
 # Run tests
 
+To run all tests use:
+```
+docker-compose exec go go test ./...
+```
+
+To see more information about test results add -v parameter:
+
+```
+docker-compose exec go go test -v ./...
+```
+
+You can also run only tests in specific packages, like:
+
 ```
 docker-compose exec go go test -v go-cource-api/infrustructure/persistence
 docker-compose exec go go test -v go-cource-api/application/handlers
