@@ -1,3 +1,5 @@
+[![Build Status](https://cloud.drone.io/api/badges/endlesskwazar/go-posts-api/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/endlesskwazar/go-posts-api)
+
 # Run application
 
 1. Clone repository
@@ -60,7 +62,7 @@ swag init
 - [ ] Try to use identity broker for all Auth e.g keycloak
 - [X] Make modular routing
 - [x] Add content negotiation
-- [ ] Add CI Dron tests pipeline
+- [X] Add CI Dron tests pipeline
 - [x] Protect comment form non owner delete
 - [ ] Extract test database config to envs
 - [ ] Add tests for social oauth
