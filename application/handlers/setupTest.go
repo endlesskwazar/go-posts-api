@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
+	"go-cource-api/application/lang"
 	"go-cource-api/infrustructure/security"
 	"net/http"
 )
@@ -37,6 +38,7 @@ func BuildContext(app *echo.Echo, r *http.Request, w http.ResponseWriter) echo.C
 
 	context.Set("user", user)
 	context.Set("responder", application.NewResponseResponder())
+	context.Set("translator", lang.NewMapTranslator())
 
 	return &cc
 }

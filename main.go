@@ -6,6 +6,7 @@ import (
 	"go-cource-api/application"
 	"go-cource-api/application/config"
 	"go-cource-api/application/handlers"
+	"go-cource-api/application/lang"
 	"go-cource-api/application/middlewares"
 	_ "go-cource-api/docs"
 	"go-cource-api/infrustructure/persistence"
@@ -65,10 +66,13 @@ func buildRepositories() (*persistence.Repositories, error) {
 
 func buildApp() *echo.Echo {
 	e := echo.New()
+
 	responder := application.NewResponseResponder()
+	translator := lang.NewMapTranslator()
 
 	e.Use(middlewares.ConfigInjectorMiddleware(appConfig))
 	e.Use(middlewares.ResponderInjectorMiddleware(responder))
+	e.Use(middlewares.TranslatorInjectorMiddleware(translator))
 	e.Validator = &application.CustomValidator{
 		Validator: validator.New(),
 	}

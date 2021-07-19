@@ -13,6 +13,7 @@ docker-compose up --build
 ```
 docker-compose exec go go test -v go-cource-api/infrustructure/persistence
 docker-compose exec go go test -v go-cource-api/application/handlers
+docker-compose exec go go test -v go-cource-api/application/lang
 ```
 
 ## Generating mocks

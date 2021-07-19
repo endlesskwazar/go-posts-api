@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
+	"go-cource-api/application/lang"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
@@ -31,9 +32,12 @@ func NewCommentHandlers(service services.CommentService) *CommentHandlers {
 // @Router /api/v1/posts/{postId}/comments [get]
 func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 	postId, err := strconv.Atoi(c.Param("postId"))
+	translator := c.Get("translator").(lang.Translator)
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
 	}
 
 	comments, err := h.service.FindByPostId(int64(postId))
@@ -57,8 +61,16 @@ func (h *CommentHandlers) FindByPostId(c echo.Context) error {
 // @Success 201 {object} entity.Comment
 // @Router /api/v1/posts/{postId}/comments [post]
 func (h *CommentHandlers) Save(c echo.Context) error {
-	commentDto := new(dto.CommentDto)
+	postId, err := strconv.Atoi(c.Param("postId"))
+	translator := c.Get("translator").(lang.Translator)
 
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "postId"))
+	}
+
+	commentDto := new(dto.CommentDto)
 	if err := c.Bind(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -68,12 +80,6 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 	}
 
 	securityContext := c.(*application.SecurityContext)
-
-	postId, err := strconv.Atoi(c.Param("postId"))
-
-	if err != nil {
-		return err
-	}
 
 	comment := &entity.Comment{
 		Body: null.StringFrom(commentDto.Body),
@@ -102,6 +108,15 @@ func (h *CommentHandlers) Save(c echo.Context) error {
 // @Success 200 {array} entity.Comment
 // @Router /api/v1/comments/{id} [put]
 func (h *CommentHandlers) Update(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	translator := c.Get("translator").(lang.Translator)
+
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
+	}
+
 	commentDto := new(dto.CommentDto)
 
 	if err := c.Bind(commentDto); err != nil {
@@ -110,12 +125,6 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 
 	if err := c.Validate(commentDto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	id, err := strconv.Atoi(c.Param("id"))
-
-	if err != nil {
-		return err
 	}
 
 	comment, err := h.service.FindById(int64(id))
@@ -151,11 +160,15 @@ func (h *CommentHandlers) Update(c echo.Context) error {
 // @Router /api/v1/comments/{id} [delete]
 func (h *CommentHandlers) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	securityContext := c.(*application.SecurityContext)
+	translator := c.Get("translator").(lang.Translator)
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
 	}
+
+	securityContext := c.(*application.SecurityContext)
 
 	comment, err := h.service.FindById(int64(id))
 

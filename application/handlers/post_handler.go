@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go-cource-api/application"
 	"go-cource-api/application/dto"
+	"go-cource-api/application/lang"
 	"go-cource-api/domain/entity"
 	"go-cource-api/infrustructure/services"
 	"gopkg.in/guregu/null.v4"
@@ -49,9 +50,12 @@ func (h *PostHandlers) List(c echo.Context) error {
 // @Router /api/v1/posts/{id} [get]
 func (h *PostHandlers) FindOne(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	translator := c.Get("translator").(lang.Translator)
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
 	}
 
 	post, err := h.service.FindById(int64(id))
@@ -112,22 +116,25 @@ func (h *PostHandlers) Save(c echo.Context) error {
 // @Success 204
 // @Router /api/v1/posts/{id} [delete]
 func (h *PostHandlers) Delete(c echo.Context) error {
-	postId, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	translator := c.Get("translator").(lang.Translator)
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
 	}
 
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
-	_, err = h.service.FindByIdAndUserId(int64(postId), userId)
+	_, err = h.service.FindByIdAndUserId(int64(id), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
 	}
 
-	if err = h.service.Delete(int64(postId)); err != nil {
+	if err = h.service.Delete(int64(id)); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
@@ -147,7 +154,16 @@ func (h *PostHandlers) Delete(c echo.Context) error {
 // @Success 200 {object} entity.Post
 // @Router /api/v1/posts/{id} [put]
 func (h *PostHandlers) Update(c echo.Context) error {
-	postId, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	translator := c.Get("translator").(lang.Translator)
+
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			translator.Translate("error.url.parameter", "id"))
+	}
+
+
 	securityContext := c.(*application.SecurityContext)
 	userId := securityContext.UserClaims().Id
 
@@ -161,14 +177,14 @@ func (h *PostHandlers) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	_, err := h.service.FindByIdAndUserId(int64(postId), userId)
+	_, err = h.service.FindByIdAndUserId(int64(id), userId)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, err)
 	}
 
 	updatedPost := &entity.Post{
-		Id: int64(postId),
+		Id: int64(id),
 		Title: null.StringFrom(postDto.Title),
 		Body: null.StringFrom(postDto.Body),
 	}
